@@ -12,6 +12,32 @@
 
 ---
 
+## 2.5. Model Set Registration
+
+หลังจากคำนวณและเลือก Model Set แล้ว ให้บันทึกข้อมูลดังกล่าวไว้ในไฟล์ `package.json` ของโปรเจค
+
+### รูปแบบที่กำหนด
+
+```json
+{
+  "project": {
+    "model": {
+      "id": "3",
+      "name": "Event Management System"
+    },
+    "sumStudentId": 192370371
+  }
+}
+```
+
+* ค่า `id` คือหมายเลข Model Set ที่ได้รับ (0-9) **เป็น string**
+* ค่า `name` คือชื่อ Model Set ตามที่ระบุใน [`docs/models.md`](models.md)
+* ค่า `sumStudentId` คือผลรวมของ Student ID ทั้งหมดในกลุ่ม
+
+**รายละเอียด Model Sets:** → [`docs/models.md`](models.md)
+
+---
+
 ## 3. Repository Structure
 - เอกสารทั้งหมดต้องอยู่ในโฟลเดอร์:
 ```text
