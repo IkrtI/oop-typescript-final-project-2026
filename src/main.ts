@@ -20,10 +20,17 @@ async function bootstrap(): Promise<void> {
 
   // Swagger/OpenAPI documentation
   const config = new DocumentBuilder()
-    .setTitle('NestJS Backend API')
-    .setDescription('API Documentation for NestJS Backend Project')
+    .setTitle('E-commerce Basic API')
+    .setDescription(
+      'NestJS Backend API for E-commerce Basic Project (Model Set 5)\n\n' +
+      '## Core Models\n' +
+      '- **Product** — สินค้าในระบบ\n' +
+      '- **Order** — คำสั่งซื้อ\n\n' +
+      'Swagger docs: http://localhost:3000/api',
+    )
     .setVersion('1.0')
-    .addTag('api')
+    .addTag('Products', 'จัดการสินค้า')
+    .addTag('Orders', 'จัดการคำสั่งซื้อ')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
