@@ -26,12 +26,9 @@
 import {
   Injectable,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { ProductsRepository } from './products.repository';
 import { Product } from './entities/product.entity';
-import { ProductStatus } from './enums/product-status.enum';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PatchProductDto } from './dto/patch-product.dto';
@@ -110,7 +107,7 @@ export class ProductsService {
   //      return this.productsRepository.create(product);
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async create(dto: CreateProductDto): Promise<Product> {
+  async create(_dto: CreateProductDto): Promise<Product> {
     throw new Error('TODO [Lukazx15-03]: ยังไม่ได้ implement create()');
   }
 
@@ -154,7 +151,7 @@ export class ProductsService {
   //      return result;
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async update(id: string, dto: UpdateProductDto): Promise<Product> {
+  async update(_id: string, _dto: UpdateProductDto): Promise<Product> {
     throw new Error('TODO [Lukazx15-04]: ยังไม่ได้ implement update()');
   }
 
@@ -190,7 +187,7 @@ export class ProductsService {
   //      return result;
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async patch(id: string, dto: PatchProductDto): Promise<Product> {
+  async patch(_id: string, _dto: PatchProductDto): Promise<Product> {
     throw new Error('TODO [Lukazx15-05]: ยังไม่ได้ implement patch()');
   }
 
@@ -209,7 +206,7 @@ export class ProductsService {
   //      return deleted;
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async remove(id: string): Promise<Product> {
+  async remove(_id: string): Promise<Product> {
     throw new Error('TODO [Lukazx15-06]: ยังไม่ได้ implement remove()');
   }
 
@@ -234,7 +231,7 @@ export class ProductsService {
   //   6. return product;
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async deductStock(productId: string, quantity: number): Promise<Product> {
+  async deductStock(_productId: string, _quantity: number): Promise<Product> {
     throw new Error('TODO [Lukazx15-07]: ยังไม่ได้ implement deductStock()');
   }
 
@@ -252,7 +249,7 @@ export class ProductsService {
   //   5. บันทึกและ return
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async restoreStock(productId: string, quantity: number): Promise<Product> {
+  async restoreStock(_productId: string, _quantity: number): Promise<Product> {
     throw new Error(
       'TODO [Lukazx15-08]: ยังไม่ได้ implement restoreStock()',
     );
