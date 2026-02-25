@@ -111,7 +111,32 @@ export class ProductsService {
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
   async create(dto: CreateProductDto): Promise<Product> {
-    throw new Error('TODO [Lukazx15-03]: ยังไม่ได้ implement create()');
+    const allProducts = await this.findAll();
+    
+    const skuExists = allProducts.some(p => p.sku === dto.sku);
+    if (skuExists) {
+      throw new BadRequestException('SKU already exists');
+    }
+
+  const now = new Date().toISOString();
+
+  const product: Product = {
+    id: uuidv4(),
+    name: dto.name,
+    description: dto.description,
+    price: dto.price,
+    stockQuantity: dto.stockQuantity,
+    sku: dto.sku,
+    category: dto.category,
+    brand: dto.brand,
+    images: dto.images,
+    weight: dto.weight ?? null,
+    status: dto.status ?? ProductStatus.ACTIVE,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  return this.productsRepository.create(product);
   }
 
   // ─────────────────────────────────────────────────────────────────
