@@ -23,7 +23,7 @@
  * ═══════════════════════════════════════════════════════════════════════
  */
 
-import { readFile, writeFile, rename } from 'fs/promises';
+import { readFile } from 'fs/promises';
 import { BaseEntity } from '../entities/base.entity';
 
 /**
@@ -158,7 +158,7 @@ export class JsonFileRepository<T extends BaseEntity> {
   //   return result;
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async findById(id: string): Promise<T | null> {
+  async findById(_id: string): Promise<T | null> {
     throw new Error(
       'TODO [bouquetofroses-04]: ยังไม่ได้ implement findById()',
     );
@@ -176,7 +176,7 @@ export class JsonFileRepository<T extends BaseEntity> {
   //   4. คืนค่า entity ที่เพิ่มไป
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async create(entity: T): Promise<T> {
+  async create(_entity: T): Promise<T> {
     throw new Error(
       'TODO [bouquetofroses-05]: ยังไม่ได้ implement create()',
     );
@@ -230,7 +230,7 @@ export class JsonFileRepository<T extends BaseEntity> {
   //   arr.splice(1, 1);  // ลบ 'b' → arr = ['a', 'c']
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async delete(id: string): Promise<T | null> {
+  async delete(_id: string): Promise<T | null> {
     throw new Error(
       'TODO [bouquetofroses-06]: ยังไม่ได้ implement delete()',
     );
