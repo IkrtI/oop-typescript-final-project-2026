@@ -15,7 +15,7 @@
  *    → เช่น ApiResponse<Product> หมายถึง data จะเป็น Product
  *         ApiResponse<Order[]> หมายถึง data จะเป็น Array ของ Order
  *
- * 👤 Assigned to: bouquetofroses (นภัทร์)
+
  * ═══════════════════════════════════════════════════════════════════════
  */
 

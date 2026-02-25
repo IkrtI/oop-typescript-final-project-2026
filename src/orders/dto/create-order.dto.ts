@@ -19,7 +19,6 @@
  * → @ValidateNested({ each: true }) = validate ทุกตัวใน Array
  * → @Type(() => Class) = บอก class-transformer ว่าต้องแปลงเป็น class ไหน
  *
- * 👤 Assigned to: pockypycok (ณัชชา)
  * ═══════════════════════════════════════════════════════════════════════
  */
 
