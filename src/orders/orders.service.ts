@@ -30,15 +30,10 @@
 import {
   Injectable,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { OrdersRepository } from './orders.repository';
 import { ProductsService } from '../products/products.service';
 import { Order } from './entities/order.entity';
-import { OrderItem } from './interfaces/order-item.interface';
-import { OrderStatus, VALID_ORDER_TRANSITIONS } from './enums/order-status.enum';
-import { ProductStatus } from '../products/enums/product-status.enum';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PatchOrderDto } from './dto/patch-order.dto';
 
@@ -153,7 +148,7 @@ export class OrdersService {
   //   return this.ordersRepository.create(order);
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async create(dto: CreateOrderDto): Promise<Order> {
+  async create(_dto: CreateOrderDto): Promise<Order> {
     throw new Error('TODO [pockypycok-03]: ยังไม่ได้ implement create()');
   }
 
@@ -209,7 +204,7 @@ export class OrdersService {
   //   return result;
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async patch(id: string, dto: PatchOrderDto): Promise<Order> {
+  async patch(_id: string, _dto: PatchOrderDto): Promise<Order> {
     throw new Error('TODO [pockypycok-04]: ยังไม่ได้ implement patch()');
   }
 
@@ -239,7 +234,7 @@ export class OrdersService {
   //   4. return deleted;
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async remove(id: string): Promise<Order> {
+  async remove(_id: string): Promise<Order> {
     throw new Error('TODO [pockypycok-05]: ยังไม่ได้ implement remove()');
   }
 
@@ -262,7 +257,7 @@ export class OrdersService {
   //   }
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  private async restoreOrderStock(order: Order): Promise<void> {
+  private async restoreOrderStock(_order: Order): Promise<void> {
     throw new Error(
       'TODO [pockypycok-06]: ยังไม่ได้ implement restoreOrderStock()',
     );

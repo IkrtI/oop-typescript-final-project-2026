@@ -26,12 +26,9 @@
 import {
   Injectable,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { ProductsRepository } from './products.repository';
 import { Product } from './entities/product.entity';
-import { ProductStatus } from './enums/product-status.enum';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PatchProductDto } from './dto/patch-product.dto';
