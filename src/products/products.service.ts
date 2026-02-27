@@ -107,8 +107,33 @@ export class ProductsService {
   //      return this.productsRepository.create(product);
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async create(_dto: CreateProductDto): Promise<Product> {
-    throw new Error('TODO [Lukazx15-03]: ยังไม่ได้ implement create()');
+  async create(dto: CreateProductDto): Promise<Product> {
+    const allProducts = await this.findAll();
+    
+    const skuExists = allProducts.some(p => p.sku === dto.sku);
+    if (skuExists) {
+      throw new BadRequestException('SKU already exists');
+    }
+
+  const now = new Date().toISOString();
+
+  const product: Product = {
+    id: uuidv4(),
+    name: dto.name,
+    description: dto.description,
+    price: dto.price,
+    stockQuantity: dto.stockQuantity,
+    sku: dto.sku,
+    category: dto.category,
+    brand: dto.brand,
+    images: dto.images,
+    weight: dto.weight ?? null,
+    status: dto.status ?? ProductStatus.ACTIVE,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  return this.productsRepository.create(product);
   }
 
   // ─────────────────────────────────────────────────────────────────
@@ -151,8 +176,38 @@ export class ProductsService {
   //      return result;
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async update(_id: string, _dto: UpdateProductDto): Promise<Product> {
-    throw new Error('TODO [Lukazx15-04]: ยังไม่ได้ implement update()');
+  async update(id: string, dto: UpdateProductDto): Promise<Product> {
+    const existing = await this.findOne(id);
+
+    if (dto.sku !== existing.sku) {
+      const all = await this.findAll();
+      const duplicate = all.some(p => p.sku === dto.sku);
+      if (duplicate) {
+      throw new BadRequestException('SKU already exists');
+    }
+  }
+
+  const updated: Product = {
+    ...existing,
+    name: dto.name,
+    description: dto.description,
+    price: dto.price,
+    stockQuantity: dto.stockQuantity,
+    sku: dto.sku,
+    category: dto.category,
+    brand: dto.brand,
+    images: dto.images,
+    weight: dto.weight ?? null,
+    status: dto.status,
+    updatedAt: new Date().toISOString(),
+  };
+
+  const result = await this.productsRepository.update(id, updated);
+  if (!result) {
+    throw new NotFoundException(`Product with id '${id}' not found`);
+  }
+
+  return result;
   }
 
   // ─────────────────────────────────────────────────────────────────
@@ -187,8 +242,28 @@ export class ProductsService {
   //      return result;
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async patch(_id: string, _dto: PatchProductDto): Promise<Product> {
-    throw new Error('TODO [Lukazx15-05]: ยังไม่ได้ implement patch()');
+  async patch(id: string, dto: PatchProductDto): Promise<Product> {
+    const existing = await this.findOne(id);
+
+  if (dto.sku !== undefined && dto.sku !== existing.sku) {
+    const all = await this.findAll();
+    const duplicate = all.some(p => p.sku === dto.sku);
+    if (duplicate) {
+      throw new BadRequestException('SKU already exists');
+    }
+  }
+
+  const patched: Product = {
+    ...existing,
+    ...dto,
+    updatedAt: new Date().toISOString(),
+  };
+
+  const result = await this.productsRepository.update(id, patched);
+    if (!result) {
+      throw new NotFoundException(`Product with id '${id}' not found`);
+    }
+    return result;
   }
 
   // ─────────────────────────────────────────────────────────────────
@@ -206,8 +281,14 @@ export class ProductsService {
   //      return deleted;
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async remove(_id: string): Promise<Product> {
-    throw new Error('TODO [Lukazx15-06]: ยังไม่ได้ implement remove()');
+  async remove(id: string): Promise<Product> {
+    await this.findOne(id);
+
+  const deleted = await this.productsRepository.delete(id);
+    if (!deleted) {
+      throw new NotFoundException(`Product with id '${id}' not found`);
+    }
+    return deleted;
   }
 
   // ═══════════════════════════════════════════════════════════════════
@@ -231,8 +312,27 @@ export class ProductsService {
   //   6. return product;
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async deductStock(_productId: string, _quantity: number): Promise<Product> {
-    throw new Error('TODO [Lukazx15-07]: ยังไม่ได้ implement deductStock()');
+  async deductStock(productId: string, quantity: number): Promise<Product> {
+      if (quantity <= 0) {
+    throw new BadRequestException('Quantity must be greater than 0');
+  }
+
+  const product = await this.findOne(productId);
+    if (product.stockQuantity < quantity) {
+      throw new BadRequestException('Insufficient stock');
+    }
+
+  product.stockQuantity -= quantity;
+
+  if (product.stockQuantity === 0) {
+    product.status = ProductStatus.OUT_OF_STOCK;
+  }
+
+  product.updatedAt = new Date().toISOString();
+
+  await this.productsRepository.update(productId, product);
+
+  return product;
   }
 
   // ─────────────────────────────────────────────────────────────────
@@ -249,9 +349,26 @@ export class ProductsService {
   //   5. บันทึกและ return
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
-  async restoreStock(_productId: string, _quantity: number): Promise<Product> {
-    throw new Error(
-      'TODO [Lukazx15-08]: ยังไม่ได้ implement restoreStock()',
-    );
+  async restoreStock(productId: string, quantity: number): Promise<Product> {
+    if (quantity <= 0) {
+      throw new BadRequestException('Quantity must be greater than 0');
+    }
+
+  const product = await this.findOne(productId);
+
+  product.stockQuantity += quantity;
+
+  if (
+    product.status === ProductStatus.OUT_OF_STOCK &&
+    product.stockQuantity > 0
+  ) {
+    product.status = ProductStatus.ACTIVE;
+  }
+
+  product.updatedAt = new Date().toISOString();
+
+  await this.productsRepository.update(productId, product);
+
+  return product;
   }
 }
