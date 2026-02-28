@@ -26,6 +26,7 @@
 import {
   Injectable,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { ProductsRepository } from './products.repository';
 import { Product } from './entities/product.entity';
