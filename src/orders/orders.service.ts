@@ -40,11 +40,7 @@ import { PatchOrderDto } from './dto/patch-order.dto';
 import { OrderStatus } from './enums/order-status.enum'; 
 import { ProductStatus } from '../products/enums/product-status.enum';
 import { VALID_ORDER_TRANSITIONS } from './enums/order-status.enum';
-import { OrderItem } from './entities/order-item.entity';
-
-
-
-
+import { OrderItem } from './interfaces/order-item.interface';
 
 
 @Injectable()
