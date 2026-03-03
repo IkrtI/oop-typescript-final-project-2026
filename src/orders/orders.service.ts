@@ -42,7 +42,6 @@ import { ProductStatus } from '../products/enums/product-status.enum';
 import { VALID_ORDER_TRANSITIONS } from './enums/order-status.enum';
 import { OrderItem } from './interfaces/order-item.interface';
 
-
 @Injectable()
 export class OrdersService {
   /**
