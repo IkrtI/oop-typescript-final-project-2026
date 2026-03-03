@@ -390,6 +390,5 @@ export class OrdersService {
   for (const item of order.items) {
     await this.productsService.restoreStock(item.productId, item.quantity);
   }
-}
-
+ }
 }
