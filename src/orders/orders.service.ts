@@ -316,9 +316,13 @@ export class OrdersService {
     }
 
     // ── ขั้นที่ 4: อัปเดตข้อมูล (Spread Merge) ──
+    const definedUpdates = Object.fromEntries(
+      Object.entries(dto).filter(([, value]) => value !== undefined),
+    );
+
     const updated: Order = {
       ...existing,
-      ...dto,
+      ...definedUpdates,
       updatedAt: new Date().toISOString(),
     };
 

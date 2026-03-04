@@ -265,9 +265,13 @@ export class ProductsService {
     }
 
     // ── ขั้นที่ 3: Merge ด้วย Spread — เฉพาะ field ที่ส่งมาจะถูกแทนที่ ──
+    const definedUpdates = Object.fromEntries(
+      Object.entries(dto).filter(([, value]) => value !== undefined),
+    );
+
     const patched: Product = {
       ...existing, // ค่าเดิมทั้งหมด
-      ...dto, // แทนที่เฉพาะ field ที่ส่งมา
+      ...definedUpdates, // แทนที่เฉพาะ field ที่ส่งมาจริง (ไม่ใช่ undefined)
       updatedAt: new Date().toISOString(),
     };
 
