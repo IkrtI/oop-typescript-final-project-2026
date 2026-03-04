@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from './app.module';
-import { describe, beforeEach, it, expect } from '@jest/globals';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AppModule } from "./app.module";
+import { describe, beforeEach, it, expect } from "@jest/globals";
 
-describe('AppModule', () => {
+describe("AppModule", () => {
   let module: TestingModule;
 
   beforeEach(async () => {
@@ -11,7 +11,7 @@ describe('AppModule', () => {
     }).compile();
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(module).toBeDefined();
   });
 });

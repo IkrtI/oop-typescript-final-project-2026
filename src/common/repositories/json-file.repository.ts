@@ -23,8 +23,8 @@
  * ═══════════════════════════════════════════════════════════════════════
  */
 
-import { readFile, writeFile, rename } from 'fs/promises';
-import { BaseEntity } from '../entities/base.entity';
+import { readFile, writeFile, rename } from "fs/promises";
+import { BaseEntity } from "../entities/base.entity";
 
 /**
  * JsonFileRepository<T> — Generic Repository ที่จัดเก็บข้อมูลในไฟล์ JSON
@@ -75,7 +75,7 @@ export class JsonFileRepository<T extends BaseEntity> {
    * readFile() อ่านไฟล์จาก disk → ใช้เวลา → ต้อง await
    */
   private async loadFromFile(): Promise<void> {
-    const content = await readFile(this.filePath, 'utf-8');
+    const content = await readFile(this.filePath, "utf-8");
     this.data = JSON.parse(content) as T[];
     this.isLoaded = true;
   }
@@ -106,13 +106,13 @@ export class JsonFileRepository<T extends BaseEntity> {
   // ⬇️ เขียนโค้ดของคุณด้านล่าง แทนที่ throw ⬇️
   private async saveToFile(): Promise<void> {
     // สร้างชื่อไฟล์ชั่วคราว เช่น "data/products.json.tmp"
-    const tmpPath = this.filePath + '.tmp';
+    const tmpPath = this.filePath + ".tmp";
 
     // แปลง array ใน memory → JSON string (pretty-print 2 spaces)
     const jsonString = JSON.stringify(this.data, null, 2);
 
     // เขียนลงไฟล์ชั่วคราวก่อน
-    await writeFile(tmpPath, jsonString, 'utf-8');
+    await writeFile(tmpPath, jsonString, "utf-8");
 
     // rename เป็น atomic operation → ถ้าเครื่องดับกลางทาง ไฟล์จริงไม่เสียหาย
     await rename(tmpPath, this.filePath);

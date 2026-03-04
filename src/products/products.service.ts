@@ -26,16 +26,16 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
-} from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { ProductsRepository } from './products.repository';
-import { Product } from './entities/product.entity';
-import { ProductStatus } from './enums/product-status.enum';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { PatchProductDto } from './dto/patch-product.dto';
-import { OrdersRepository } from '../orders/orders.repository';
-import { CustomersRepository } from '../customers/customers.repository';
+} from "@nestjs/common";
+import { v4 as uuidv4 } from "uuid";
+import { ProductsRepository } from "./products.repository";
+import { Product } from "./entities/product.entity";
+import { ProductStatus } from "./enums/product-status.enum";
+import { CreateProductDto } from "./dto/create-product.dto";
+import { UpdateProductDto } from "./dto/update-product.dto";
+import { PatchProductDto } from "./dto/patch-product.dto";
+import { OrdersRepository } from "../orders/orders.repository";
+import { CustomersRepository } from "../customers/customers.repository";
 
 @Injectable()
 export class ProductsService {
@@ -119,13 +119,13 @@ export class ProductsService {
     // ── ขั้นที่ 1: ตรวจสอบว่า SKU ซ้ำกับสินค้าที่มีอยู่แล้วหรือไม่ ──
     const allProducts = await this.findAll();
     if (allProducts.some((p) => p.sku === dto.sku)) {
-      throw new BadRequestException('SKU already exists');
+      throw new BadRequestException("SKU already exists");
     }
 
     // ── ขั้นที่ 2: สร้าง Product object ใหม่จากข้อมูลที่รับมา ──
     const now = new Date().toISOString();
     const product: Product = {
-      id: uuidv4(),                               // สร้าง UUID ใหม่ให้สินค้า
+      id: uuidv4(), // สร้าง UUID ใหม่ให้สินค้า
       name: dto.name,
       description: dto.description,
       price: dto.price,
@@ -134,8 +134,8 @@ export class ProductsService {
       category: dto.category,
       brand: dto.brand,
       images: dto.images,
-      weight: dto.weight ?? null,                  // ถ้าไม่ส่งมา → null
-      status: dto.status ?? ProductStatus.ACTIVE,  // ค่า default = ACTIVE
+      weight: dto.weight ?? null, // ถ้าไม่ส่งมา → null
+      status: dto.status ?? ProductStatus.ACTIVE, // ค่า default = ACTIVE
       createdAt: now,
       updatedAt: now,
     };
@@ -192,14 +192,14 @@ export class ProductsService {
     if (dto.sku !== existing.sku) {
       const all = await this.findAll();
       if (all.some((p) => p.sku === dto.sku)) {
-        throw new BadRequestException('SKU already exists');
+        throw new BadRequestException("SKU already exists");
       }
     }
 
     // ── ขั้นที่ 3: สร้าง Product ใหม่โดยเก็บ id + createdAt เดิม ──
     const updated: Product = {
-      ...existing,                                // ค่าเดิมทั้งหมด (id, createdAt ฯลฯ)
-      name: dto.name,                             // แทนที่ด้วยค่าใหม่จาก DTO
+      ...existing, // ค่าเดิมทั้งหมด (id, createdAt ฯลฯ)
+      name: dto.name, // แทนที่ด้วยค่าใหม่จาก DTO
       description: dto.description,
       price: dto.price,
       stockQuantity: dto.stockQuantity,
@@ -209,7 +209,7 @@ export class ProductsService {
       images: dto.images,
       weight: dto.weight ?? null,
       status: dto.status,
-      updatedAt: new Date().toISOString(),         // อัปเดตเวลาแก้ไข
+      updatedAt: new Date().toISOString(), // อัปเดตเวลาแก้ไข
     };
 
     // ── ขั้นที่ 4: บันทึกลง Repository ──
@@ -260,14 +260,14 @@ export class ProductsService {
     if (dto.sku !== undefined && dto.sku !== existing.sku) {
       const all = await this.findAll();
       if (all.some((p) => p.sku === dto.sku)) {
-        throw new BadRequestException('SKU already exists');
+        throw new BadRequestException("SKU already exists");
       }
     }
 
     // ── ขั้นที่ 3: Merge ด้วย Spread — เฉพาะ field ที่ส่งมาจะถูกแทนที่ ──
     const patched: Product = {
-      ...existing,       // ค่าเดิมทั้งหมด
-      ...dto,            // แทนที่เฉพาะ field ที่ส่งมา
+      ...existing, // ค่าเดิมทั้งหมด
+      ...dto, // แทนที่เฉพาะ field ที่ส่งมา
       updatedAt: new Date().toISOString(),
     };
 
@@ -370,7 +370,10 @@ export class ProductsService {
     product.stockQuantity += quantity;
 
     // ถ้าเคย OUT_OF_STOCK แต่ตอนนี้มีสต็อกแล้ว → กลับเป็น ACTIVE
-    if (product.status === ProductStatus.OUT_OF_STOCK && product.stockQuantity > 0) {
+    if (
+      product.status === ProductStatus.OUT_OF_STOCK &&
+      product.stockQuantity > 0
+    ) {
       product.status = ProductStatus.ACTIVE;
     }
 
@@ -416,7 +419,9 @@ export class ProductsService {
     >();
 
     for (const order of orders) {
-      const orderItems = order.items.filter((item) => item.productId === productId);
+      const orderItems = order.items.filter(
+        (item) => item.productId === productId,
+      );
       if (orderItems.length === 0) {
         continue;
       }
@@ -447,8 +452,8 @@ export class ProductsService {
         const customer = customerMap.get(row.customerId);
         return {
           customerId: row.customerId,
-          fullName: customer?.fullName ?? 'Unknown customer',
-          email: customer?.email ?? '-',
+          fullName: customer?.fullName ?? "Unknown customer",
+          email: customer?.email ?? "-",
           totalQuantity: row.totalQuantity,
           totalSpent: row.totalSpent,
           orderCount: row.orderCount,

@@ -14,9 +14,9 @@
  * ═══════════════════════════════════════════════════════════════════════
  */
 
-import { BaseEntity } from '../../common/entities/base.entity';
-import { ProductCategory } from '../enums/product-category.enum';
-import { ProductStatus } from '../enums/product-status.enum';
+import { BaseEntity } from "../../common/entities/base.entity";
+import { ProductCategory } from "../enums/product-category.enum";
+import { ProductStatus } from "../enums/product-status.enum";
 
 /**
  * Product Entity — สินค้าในระบบร้านค้าออนไลน์

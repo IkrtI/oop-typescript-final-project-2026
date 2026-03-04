@@ -30,9 +30,9 @@
 // ⬇️ เติมค่า Enum ด้านล่าง ⬇️
 
 export enum ProductCategory {
-  ELECTRONICS = 'ELECTRONICS',
-  CLOTHING = 'CLOTHING',
-  HOME = 'HOME',
-  BEAUTY = 'BEAUTY',
-  OTHER = 'OTHER',
+  ELECTRONICS = "ELECTRONICS",
+  CLOTHING = "CLOTHING",
+  HOME = "HOME",
+  BEAUTY = "BEAUTY",
+  OTHER = "OTHER",
 }

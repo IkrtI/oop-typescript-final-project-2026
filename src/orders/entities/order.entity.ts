@@ -12,10 +12,10 @@
  * ═══════════════════════════════════════════════════════════════════════
  */
 
-import { BaseEntity } from '../../common/entities/base.entity';
-import { OrderItem } from '../interfaces/order-item.interface';
-import { OrderStatus } from '../enums/order-status.enum';
-import { PaymentMethod } from '../enums/payment-method.enum';
+import { BaseEntity } from "../../common/entities/base.entity";
+import { OrderItem } from "../interfaces/order-item.interface";
+import { OrderStatus } from "../enums/order-status.enum";
+import { PaymentMethod } from "../enums/payment-method.enum";
 
 /**
  * Order Entity — คำสั่งซื้อในระบบ

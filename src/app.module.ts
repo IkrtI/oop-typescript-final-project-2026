@@ -14,28 +14,28 @@
  * ═══════════════════════════════════════════════════════════════════════
  */
 
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 
 // ── Products Domain ──
-import { ProductsController } from './products/products.controller';
-import { ProductsService } from './products/products.service';
-import { ProductsRepository } from './products/products.repository';
+import { ProductsController } from "./products/products.controller";
+import { ProductsService } from "./products/products.service";
+import { ProductsRepository } from "./products/products.repository";
 
 // ── Orders Domain ──
-import { OrdersController } from './orders/orders.controller';
-import { OrdersService } from './orders/orders.service';
-import { OrdersRepository } from './orders/orders.repository';
+import { OrdersController } from "./orders/orders.controller";
+import { OrdersService } from "./orders/orders.service";
+import { OrdersRepository } from "./orders/orders.repository";
 
 // ── Customers Domain ──
-import { CustomersController } from './customers/customers.controller';
-import { CustomersService } from './customers/customers.service';
-import { CustomersRepository } from './customers/customers.repository';
+import { CustomersController } from "./customers/customers.controller";
+import { CustomersService } from "./customers/customers.service";
+import { CustomersRepository } from "./customers/customers.repository";
 
 @Module({
   imports: [],
   controllers: [
-    ProductsController,  // จัดการ HTTP requests สำหรับ /products
-    OrdersController,    // จัดการ HTTP requests สำหรับ /orders
+    ProductsController, // จัดการ HTTP requests สำหรับ /products
+    OrdersController, // จัดการ HTTP requests สำหรับ /orders
     CustomersController, // จัดการ HTTP requests สำหรับ /customer
   ],
   providers: [

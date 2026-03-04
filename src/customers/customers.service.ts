@@ -2,16 +2,16 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-} from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { CustomersRepository } from './customers.repository';
-import { OrdersRepository } from '../orders/orders.repository';
-import { ProductsRepository } from '../products/products.repository';
-import { Customer } from './entities/customer.entity';
-import { CreateCustomerDto } from './dto/create-customer.dto';
-import { UpdateCustomerDto } from './dto/update-customer.dto';
-import { PatchCustomerDto } from './dto/patch-customer.dto';
-import { CustomerStatus } from './enums/customer-status.enum';
+} from "@nestjs/common";
+import { v4 as uuidv4 } from "uuid";
+import { CustomersRepository } from "./customers.repository";
+import { OrdersRepository } from "../orders/orders.repository";
+import { ProductsRepository } from "../products/products.repository";
+import { Customer } from "./entities/customer.entity";
+import { CreateCustomerDto } from "./dto/create-customer.dto";
+import { UpdateCustomerDto } from "./dto/update-customer.dto";
+import { PatchCustomerDto } from "./dto/patch-customer.dto";
+import { CustomerStatus } from "./enums/customer-status.enum";
 
 @Injectable()
 export class CustomersService {
@@ -99,7 +99,7 @@ export class CustomersService {
     const orders = await this.ordersRepository.findAll();
     if (orders.some((order) => order.customerId === id)) {
       throw new BadRequestException(
-        'Customer has order history and cannot be deleted',
+        "Customer has order history and cannot be deleted",
       );
     }
 
@@ -112,7 +112,7 @@ export class CustomersService {
 
   async getOrdersByCustomer(id: string): Promise<{
     customer: Customer;
-    orders: any[];
+    orders: unknown[];
     summary: {
       totalOrders: number;
       totalSpent: number;
@@ -133,7 +133,12 @@ export class CustomersService {
 
     const productMap = new Map<
       string,
-      { productId: string; productName: string; totalQuantity: number; totalSpent: number }
+      {
+        productId: string;
+        productName: string;
+        totalQuantity: number;
+        totalSpent: number;
+      }
     >();
     let totalSpent = 0;
 
@@ -181,10 +186,17 @@ export class CustomersService {
       this.ordersRepository.findAll(),
     ]);
 
-    const customerMap = new Map(customers.map((customer) => [customer.id, customer]));
+    const customerMap = new Map(
+      customers.map((customer) => [customer.id, customer]),
+    );
     const grouped = new Map<
       string,
-      { customerId: string; orderCount: number; totalSpent: number; lastOrderAt: string | null }
+      {
+        customerId: string;
+        orderCount: number;
+        totalSpent: number;
+        lastOrderAt: string | null;
+      }
     >();
 
     for (const order of orders) {
@@ -205,7 +217,8 @@ export class CustomersService {
     return [...grouped.values()]
       .map((row) => ({
         ...row,
-        fullName: customerMap.get(row.customerId)?.fullName ?? 'Unknown customer',
+        fullName:
+          customerMap.get(row.customerId)?.fullName ?? "Unknown customer",
       }))
       .sort((a, b) => b.totalSpent - a.totalSpent)
       .slice(0, Math.max(1, limit));
@@ -229,14 +242,14 @@ export class CustomersService {
         customer.id !== ignoreId,
     );
     if (duplicateEmail) {
-      throw new BadRequestException('Email already exists');
+      throw new BadRequestException("Email already exists");
     }
 
     const duplicatePhone = customers.find(
       (customer) => customer.phone === phone && customer.id !== ignoreId,
     );
     if (duplicatePhone) {
-      throw new BadRequestException('Phone already exists');
+      throw new BadRequestException("Phone already exists");
     }
   }
 
@@ -253,7 +266,9 @@ export class CustomersService {
       this.ordersRepository.findAll(),
       this.productsRepository.findAll(),
     ]);
-    const productsMap = new Map(products.map((product) => [product.id, product]));
+    const productsMap = new Map(
+      products.map((product) => [product.id, product]),
+    );
 
     const grouped = new Map<
       string,
@@ -278,7 +293,8 @@ export class CustomersService {
 
         row.totalQuantity += item.quantity;
         row.totalRevenue += item.subtotal;
-        row.productName = productsMap.get(item.productId)?.name ?? item.productName;
+        row.productName =
+          productsMap.get(item.productId)?.name ?? item.productName;
         row.buyers.add(order.customerId);
         grouped.set(item.productId, row);
       }

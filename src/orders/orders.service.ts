@@ -30,17 +30,20 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
-} from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { OrdersRepository } from './orders.repository';
-import { ProductsService } from '../products/products.service';
-import { Order } from './entities/order.entity';
-import { OrderItem } from './interfaces/order-item.interface';
-import { OrderStatus, VALID_ORDER_TRANSITIONS } from './enums/order-status.enum';
-import { ProductStatus } from '../products/enums/product-status.enum';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { PatchOrderDto } from './dto/patch-order.dto';
-import { CustomersService } from '../customers/customers.service';
+} from "@nestjs/common";
+import { v4 as uuidv4 } from "uuid";
+import { OrdersRepository } from "./orders.repository";
+import { ProductsService } from "../products/products.service";
+import { Order } from "./entities/order.entity";
+import { OrderItem } from "./interfaces/order-item.interface";
+import {
+  OrderStatus,
+  VALID_ORDER_TRANSITIONS,
+} from "./enums/order-status.enum";
+import { ProductStatus } from "../products/enums/product-status.enum";
+import { CreateOrderDto } from "./dto/create-order.dto";
+import { PatchOrderDto } from "./dto/patch-order.dto";
+import { CustomersService } from "../customers/customers.service";
 
 @Injectable()
 export class OrdersService {
@@ -157,9 +160,7 @@ export class OrdersService {
   async create(dto: CreateOrderDto): Promise<Order> {
     const hasCustomer = await this.customersService.hasCustomer(dto.customerId);
     if (!hasCustomer) {
-      throw new BadRequestException(
-        `Customer '${dto.customerId}' not found`,
-      );
+      throw new BadRequestException(`Customer '${dto.customerId}' not found`);
     }
 
     // ═══════════════════════════════════════════════════════
@@ -219,10 +220,10 @@ export class OrdersService {
       customerId: dto.customerId,
       items: orderItems,
       totalAmount,
-      status: OrderStatus.PENDING,         // ออเดอร์ใหม่เริ่มต้นที่ PENDING เสมอ
+      status: OrderStatus.PENDING, // ออเดอร์ใหม่เริ่มต้นที่ PENDING เสมอ
       paymentMethod: dto.paymentMethod,
       shippingAddress: dto.shippingAddress,
-      trackingNumber: null,                // ยังไม่มีเลขพัสดุ
+      trackingNumber: null, // ยังไม่มีเลขพัสดุ
       note: dto.note ?? null,
       placedAt: now,
       createdAt: now,
@@ -296,9 +297,7 @@ export class OrdersService {
       existing.status === OrderStatus.COMPLETED ||
       existing.status === OrderStatus.CANCELLED
     ) {
-      throw new BadRequestException(
-        `Cannot update a ${existing.status} order`,
-      );
+      throw new BadRequestException(`Cannot update a ${existing.status} order`);
     }
 
     // ── ขั้นที่ 3: ตรวจ State Transition (ถ้ามีการเปลี่ยนสถานะ) ──
