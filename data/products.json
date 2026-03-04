@@ -1,1 +1,36 @@
-[]
+[
+  {
+    "id": "57398124-8f52-4e96-aea3-11e484d6adce",
+    "name": "Test Product",
+    "description": "A product created by E2E tests",
+    "price": 199.99,
+    "stockQuantity": 49,
+    "sku": "TEST-1772631519951-1",
+    "category": "ELECTRONICS",
+    "brand": "TestBrand",
+    "images": [
+      "https://example.com/img.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-03-04T13:38:39.952Z",
+    "updatedAt": "2026-03-04T13:38:39.954Z"
+  },
+  {
+    "id": "edb1f1d5-1893-43e9-9fa2-933436ba87e5",
+    "name": "Test Product",
+    "description": "A product created by E2E tests",
+    "price": 199.99,
+    "stockQuantity": 48,
+    "sku": "SKU-1772631519959",
+    "category": "ELECTRONICS",
+    "brand": "TestBrand",
+    "images": [
+      "https://example.com/img.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-03-04T13:38:39.960Z",
+    "updatedAt": "2026-03-04T13:38:39.962Z"
+  }
+]

@@ -11,13 +11,12 @@
  *   BaseEntity = แม่พิมพ์พื้นฐาน (มีรหัส, วันที่)
  *   Product    = แม่พิมพ์สินค้า (มีทุกอย่างจากพื้นฐาน + ชื่อ, ราคา, สต็อก)
  *
- * 👤 Assigned to: Lukazx15 (ณัฐนันท์)
  * ═══════════════════════════════════════════════════════════════════════
  */
 
-import { BaseEntity } from '../../common/entities/base.entity';
-import { ProductCategory } from '../enums/product-category.enum';
-import { ProductStatus } from '../enums/product-status.enum';
+import { BaseEntity } from "../../common/entities/base.entity";
+import { ProductCategory } from "../enums/product-category.enum";
+import { ProductStatus } from "../enums/product-status.enum";
 
 /**
  * Product Entity — สินค้าในระบบร้านค้าออนไลน์

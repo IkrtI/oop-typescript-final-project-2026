@@ -19,11 +19,10 @@
  * → @ValidateNested({ each: true }) = validate ทุกตัวใน Array
  * → @Type(() => Class) = บอก class-transformer ว่าต้องแปลงเป็น class ไหน
  *
- * 👤 Assigned to: pockypycok (ณัชชา)
  * ═══════════════════════════════════════════════════════════════════════
  */
 
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsString,
   IsEnum,
@@ -31,10 +30,10 @@ import {
   IsOptional,
   ValidateNested,
   ArrayMinSize,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { PaymentMethod } from '../enums/payment-method.enum';
-import { CreateOrderItemDto } from './create-order-item.dto';
+} from "class-validator";
+import { Type } from "class-transformer";
+import { PaymentMethod } from "../enums/payment-method.enum";
+import { CreateOrderItemDto } from "./create-order-item.dto";
 
 export class CreateOrderDto {
   // ─────────────────────────────────────────────────────────────────
@@ -47,7 +46,7 @@ export class CreateOrderDto {
   // 📖 ดู pattern จาก CreateProductDto เป็นตัวอย่าง
   // ─────────────────────────────────────────────────────────────────
 
-  @ApiProperty({ description: 'รหัสลูกค้า', example: 'CUST-001' })
+  @ApiProperty({ description: "รหัสลูกค้า", example: "CUST-001" })
   @IsString()
   customerId!: string;
 
@@ -61,7 +60,7 @@ export class CreateOrderDto {
    *   @Type(() => CreateOrderItemDto) → แปลง plain object → class instance
    */
   @ApiProperty({
-    description: 'รายการสินค้า (อย่างน้อย 1 รายการ)',
+    description: "รายการสินค้า (อย่างน้อย 1 รายการ)",
     type: [CreateOrderItemDto],
   })
   @IsArray()
@@ -71,7 +70,7 @@ export class CreateOrderDto {
   items!: CreateOrderItemDto[];
 
   @ApiProperty({
-    description: 'วิธีชำระเงิน',
+    description: "วิธีชำระเงิน",
     enum: PaymentMethod,
     example: PaymentMethod.CREDIT_CARD,
   })
@@ -79,15 +78,15 @@ export class CreateOrderDto {
   paymentMethod!: PaymentMethod;
 
   @ApiProperty({
-    description: 'ที่อยู่จัดส่ง',
-    example: '123 ถนนสุขุมวิท กรุงเทพฯ 10110',
+    description: "ที่อยู่จัดส่ง",
+    example: "123 ถนนสุขุมวิท กรุงเทพฯ 10110",
   })
   @IsString()
   shippingAddress!: string;
 
   @ApiPropertyOptional({
-    description: 'หมายเหตุเพิ่มเติม',
-    example: 'ส่งช่วงเย็น',
+    description: "หมายเหตุเพิ่มเติม",
+    example: "ส่งช่วงเย็น",
   })
   @IsOptional()
   @IsString()

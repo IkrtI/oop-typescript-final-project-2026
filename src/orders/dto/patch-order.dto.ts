@@ -13,17 +13,16 @@
  *   ❌ totalAmount  → คำนวณจาก items ตอนสร้าง
  *   ❌ customerId   → ไม่สามารถเปลี่ยนเจ้าของออเดอร์
  *
- * 👤 Assigned to: pockypycok (ณัชชา)
  * ═══════════════════════════════════════════════════════════════════════
  */
 
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsEnum, IsOptional } from 'class-validator';
-import { OrderStatus } from '../enums/order-status.enum';
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IsString, IsEnum, IsOptional } from "class-validator";
+import { OrderStatus } from "../enums/order-status.enum";
 
 export class PatchOrderDto {
   @ApiPropertyOptional({
-    description: 'เปลี่ยนสถานะออเดอร์',
+    description: "เปลี่ยนสถานะออเดอร์",
     enum: OrderStatus,
   })
   @IsOptional()
@@ -31,16 +30,16 @@ export class PatchOrderDto {
   status?: OrderStatus;
 
   @ApiPropertyOptional({
-    description: 'เลขพัสดุ (ใช้ตอนจัดส่ง)',
-    example: 'TH999888777',
+    description: "เลขพัสดุ (ใช้ตอนจัดส่ง)",
+    example: "TH999888777",
   })
   @IsOptional()
   @IsString()
   trackingNumber?: string;
 
   @ApiPropertyOptional({
-    description: 'หมายเหตุ',
-    example: 'ลูกค้าขอเปลี่ยนที่อยู่',
+    description: "หมายเหตุ",
+    example: "ลูกค้าขอเปลี่ยนที่อยู่",
   })
   @IsOptional()
   @IsString()

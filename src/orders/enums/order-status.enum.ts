@@ -16,16 +16,15 @@
  *   - COMPLETED → ❌ ไม่สามารถเปลี่ยนสถานะอะไรได้อีก
  *   - CANCELLED → ❌ ไม่สามารถเปลี่ยนสถานะอะไรได้อีก
  *
- * 👤 Assigned to: pockypycok (ณัชชา)
  * ═══════════════════════════════════════════════════════════════════════
  */
 
 export enum OrderStatus {
-  PENDING = 'PENDING',
-  PAID = 'PAID',
-  SHIPPED = 'SHIPPED',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
+  PENDING = "PENDING",
+  PAID = "PAID",
+  SHIPPED = "SHIPPED",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
 }
 
 /**
@@ -43,6 +42,6 @@ export const VALID_ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   [OrderStatus.PENDING]: [OrderStatus.PAID, OrderStatus.CANCELLED],
   [OrderStatus.PAID]: [OrderStatus.SHIPPED, OrderStatus.CANCELLED],
   [OrderStatus.SHIPPED]: [OrderStatus.COMPLETED],
-  [OrderStatus.COMPLETED]: [],   // ← จุดสิ้นสุด ไม่มีทางไปต่อ
-  [OrderStatus.CANCELLED]: [],   // ← จุดสิ้นสุด ไม่มีทางไปต่อ
+  [OrderStatus.COMPLETED]: [], // ← จุดสิ้นสุด ไม่มีทางไปต่อ
+  [OrderStatus.CANCELLED]: [], // ← จุดสิ้นสุด ไม่มีทางไปต่อ
 };

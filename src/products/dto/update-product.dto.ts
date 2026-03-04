@@ -11,11 +11,10 @@
  * ── PUT ─── : ส่งข้อมูลครบทุก field → แทนที่ resource ทั้งตัว
  * ── PATCH ── : ส่งเฉพาะ field ที่เปลี่ยน → อัปเดตบางส่วน
  *
- * 👤 Assigned to: Lukazx15 (ณัฐนันท์)
  * ═══════════════════════════════════════════════════════════════════════
  */
 
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsString,
   IsNumber,
@@ -28,9 +27,9 @@ import {
   Min,
   IsPositive,
   ArrayMinSize,
-} from 'class-validator';
-import { ProductCategory } from '../enums/product-category.enum';
-import { ProductStatus } from '../enums/product-status.enum';
+} from "class-validator";
+import { ProductCategory } from "../enums/product-category.enum";
+import { ProductStatus } from "../enums/product-status.enum";
 
 /**
  * UpdateProductDto — ใช้สำหรับ PUT /products/:id
@@ -39,50 +38,50 @@ import { ProductStatus } from '../enums/product-status.enum';
  * เพราะ PUT ต้องส่งข้อมูลครบทุก field
  */
 export class UpdateProductDto {
-  @ApiProperty({ description: 'ชื่อสินค้า', minLength: 3 })
+  @ApiProperty({ description: "ชื่อสินค้า", minLength: 3 })
   @IsString()
   @MinLength(3)
   name!: string;
 
-  @ApiProperty({ description: 'รายละเอียดสินค้า' })
+  @ApiProperty({ description: "รายละเอียดสินค้า" })
   @IsString()
   description!: string;
 
-  @ApiProperty({ description: 'ราคาต่อหน่วย (> 0)' })
+  @ApiProperty({ description: "ราคาต่อหน่วย (> 0)" })
   @IsNumber()
   @IsPositive()
   price!: number;
 
-  @ApiProperty({ description: 'จำนวนสต็อก (>= 0)' })
+  @ApiProperty({ description: "จำนวนสต็อก (>= 0)" })
   @IsInt()
   @Min(0)
   stockQuantity!: number;
 
-  @ApiProperty({ description: 'SKU (ไม่ซ้ำกัน)' })
+  @ApiProperty({ description: "SKU (ไม่ซ้ำกัน)" })
   @IsString()
   sku!: string;
 
-  @ApiProperty({ description: 'หมวดหมู่', enum: ProductCategory })
+  @ApiProperty({ description: "หมวดหมู่", enum: ProductCategory })
   @IsEnum(ProductCategory)
   category!: ProductCategory;
 
-  @ApiProperty({ description: 'ยี่ห้อ' })
+  @ApiProperty({ description: "ยี่ห้อ" })
   @IsString()
   brand!: string;
 
-  @ApiProperty({ description: 'รูปภาพ (Array ของ URL)', type: [String] })
+  @ApiProperty({ description: "รูปภาพ (Array ของ URL)", type: [String] })
   @IsArray()
   @ArrayMinSize(1)
   @IsUrl({}, { each: true })
   images!: string[];
 
-  @ApiPropertyOptional({ description: 'น้ำหนัก (kg)' })
+  @ApiPropertyOptional({ description: "น้ำหนัก (kg)" })
   @IsOptional()
   @IsNumber()
   weight?: number;
 
   // 🎯 สำหรับ PUT → status เป็น required (ไม่ใช่ Optional)
-  @ApiProperty({ description: 'สถานะสินค้า', enum: ProductStatus })
+  @ApiProperty({ description: "สถานะสินค้า", enum: ProductStatus })
   @IsEnum(ProductStatus)
   status!: ProductStatus;
 }

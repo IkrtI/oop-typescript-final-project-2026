@@ -9,12 +9,11 @@
  *   🟡 OUT_OF_STOCK → "หมดชั่วคราว" — รอเติมสต็อก
  *   🔴 DISCONTINUED → "เลิกขาย" — ไม่รับออเดอร์อีกแล้ว
  *
- * 👤 Assigned to: Lukazx15 (ณัฐนันท์)
  * ═══════════════════════════════════════════════════════════════════════
  */
 
 export enum ProductStatus {
-  ACTIVE = 'ACTIVE',
-  OUT_OF_STOCK = 'OUT_OF_STOCK',
-  DISCONTINUED = 'DISCONTINUED',
+  ACTIVE = "ACTIVE",
+  OUT_OF_STOCK = "OUT_OF_STOCK",
+  DISCONTINUED = "DISCONTINUED",
 }

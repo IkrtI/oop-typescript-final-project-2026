@@ -95,6 +95,39 @@ npm run start:dev
 http://localhost:3000/api
 ```
 
+### 4. Frontend Dashboard
+
+มี frontend dashboard แบบ static เพิ่มในโฟลเดอร์ `frontend/` สำหรับใช้งานกับ API ที่รันบน `http://localhost:3000`
+
+เปิดไฟล์นี้ด้วย browser ได้ทันที:
+
+```text
+frontend/index.html
+```
+
+ฟีเจอร์หลักที่รองรับ:
+
+* ซื้อสินค้าโดยเลือกลูกค้า (สร้าง order)
+* ดูประวัติว่าลูกค้าคนไหนซื้ออะไรบ้าง
+* CRUD สินค้า
+* แก้สถานะ order และ tracking number
+* ดู insights เช่น top buyers และ top products
+
+### 5. New Customer APIs
+
+เพิ่ม REST APIs สำหรับ `customer` และความสัมพันธ์ข้าม model:
+
+* `GET /customer`
+* `GET /customer/:id`
+* `POST /customer`
+* `PUT /customer/:id`
+* `PATCH /customer/:id`
+* `DELETE /customer/:id`
+* `GET /customer/:id/orders`
+* `GET /customer/insights/top-buyers`
+* `GET /products/:id/customers`
+* `GET /products/insights/most-bought`
+
 ---
 
 ## 🧩 Model Sets

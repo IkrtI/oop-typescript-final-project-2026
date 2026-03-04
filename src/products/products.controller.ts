@@ -16,7 +16,6 @@
  *   @Param('id') → ดึงค่า parameter จาก URL (เช่น /products/123 → id = '123')
  *   @Body()  → ดึง request body (ข้อมูลที่ลูกค้าส่งมา)
  *
- * 👤 Assigned to: Lukazx15 (ณัฐนันท์)
  * ═══════════════════════════════════════════════════════════════════════
  */
 
@@ -31,32 +30,53 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse as SwaggerResponse } from '@nestjs/swagger';
-import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { PatchProductDto } from './dto/patch-product.dto';
-import { Product } from './entities/product.entity';
-import { ApiResponse } from '../common/interfaces/api-response.interface';
+  Query,
+} from "@nestjs/common";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse as SwaggerResponse,
+} from "@nestjs/swagger";
+import { ProductsService } from "./products.service";
+import { CreateProductDto } from "./dto/create-product.dto";
+import { UpdateProductDto } from "./dto/update-product.dto";
+import { PatchProductDto } from "./dto/patch-product.dto";
+import { Product } from "./entities/product.entity";
+import { ApiResponse } from "../common/interfaces/api-response.interface";
 
 /**
  * @Controller('products') → ทุก endpoint ใน class นี้จะเริ่มต้นด้วย /products
  * @ApiTags('Products')    → จัดกลุ่มใน Swagger UI
  */
-@ApiTags('Products')
-@Controller('products')
+@ApiTags("Products")
+@Controller("products")
 export class ProductsController {
   /** Inject ProductsService ผ่าน Constructor */
   constructor(private readonly productsService: ProductsService) {}
+
+  @Get("insights/most-bought")
+  @ApiOperation({ summary: "สินค้ายอดนิยมจากประวัติการสั่งซื้อ" })
+  @SwaggerResponse({ status: 200, description: "สำเร็จ" })
+  async mostBoughtInsights(
+    @Query("limit") limit?: string,
+  ): Promise<ApiResponse<unknown[]>> {
+    const ordered = await this.productsService.findMostBoughtProducts(
+      Number(limit ?? 10),
+    );
+    return {
+      success: true,
+      message: "Most bought insights retrieved successfully",
+      data: ordered,
+    };
+  }
 
   // ═══════════════════════════════════════════════════════════════════
   // ✅ ตัวอย่าง: GET /products — ดึงสินค้าทั้งหมด
   // ═══════════════════════════════════════════════════════════════════
 
   @Get()
-  @ApiOperation({ summary: 'ดึงสินค้าทั้งหมด' })
-  @SwaggerResponse({ status: 200, description: 'สำเร็จ' })
+  @ApiOperation({ summary: "ดึงสินค้าทั้งหมด" })
+  @SwaggerResponse({ status: 200, description: "สำเร็จ" })
   async findAll(): Promise<ApiResponse<Product[]>> {
     // เรียก Service → ได้ข้อมูลกลับมา
     const products = await this.productsService.findAll();
@@ -64,7 +84,7 @@ export class ProductsController {
     // สร้าง Standard Response แล้ว return
     return {
       success: true,
-      message: 'Products retrieved successfully',
+      message: "Products retrieved successfully",
       data: products,
     };
   }
@@ -73,16 +93,31 @@ export class ProductsController {
   // ✅ ตัวอย่าง: GET /products/:id — ดึงสินค้าตาม ID
   // ═══════════════════════════════════════════════════════════════════
 
-  @Get(':id')
-  @ApiOperation({ summary: 'ดึงสินค้าตาม ID' })
-  @SwaggerResponse({ status: 200, description: 'สำเร็จ' })
-  @SwaggerResponse({ status: 404, description: 'ไม่พบสินค้า' })
-  async findOne(@Param('id') id: string): Promise<ApiResponse<Product>> {
+  @Get(":id")
+  @ApiOperation({ summary: "ดึงสินค้าตาม ID" })
+  @SwaggerResponse({ status: 200, description: "สำเร็จ" })
+  @SwaggerResponse({ status: 404, description: "ไม่พบสินค้า" })
+  async findOne(@Param("id") id: string): Promise<ApiResponse<Product>> {
     const product = await this.productsService.findOne(id);
     return {
       success: true,
-      message: 'Product retrieved successfully',
+      message: "Product retrieved successfully",
       data: product,
+    };
+  }
+
+  @Get(":id/customers")
+  @ApiOperation({ summary: "ดูว่าสินค้าชิ้นนี้ถูกซื้อโดยใครบ้าง" })
+  @SwaggerResponse({ status: 200, description: "สำเร็จ" })
+  @SwaggerResponse({ status: 404, description: "ไม่พบสินค้า" })
+  async findCustomersByProduct(
+    @Param("id") id: string,
+  ): Promise<ApiResponse<unknown[]>> {
+    const result = await this.productsService.findCustomersByProduct(id);
+    return {
+      success: true,
+      message: "Customers by product retrieved successfully",
+      data: result,
     };
   }
 
@@ -109,16 +144,14 @@ export class ProductsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'สร้างสินค้าใหม่' })
-  @SwaggerResponse({ status: 201, description: 'สร้างสำเร็จ' })
-  @SwaggerResponse({ status: 400, description: 'ข้อมูลไม่ถูกต้อง' })
-  async create(
-    @Body() dto: CreateProductDto,
-  ): Promise<ApiResponse<Product>> {
+  @ApiOperation({ summary: "สร้างสินค้าใหม่" })
+  @SwaggerResponse({ status: 201, description: "สร้างสำเร็จ" })
+  @SwaggerResponse({ status: 400, description: "ข้อมูลไม่ถูกต้อง" })
+  async create(@Body() dto: CreateProductDto): Promise<ApiResponse<Product>> {
     const product = await this.productsService.create(dto);
     return {
       success: true,
-      message: 'Product created successfully',
+      message: "Product created successfully",
       data: product,
     };
   }
@@ -134,19 +167,19 @@ export class ProductsController {
   //
   // ⬇️ เขียน endpoint ของคุณด้านล่าง ⬇️
 
-  @Put(':id')
-  @ApiOperation({ summary: 'แก้ไขสินค้าทั้งหมด (PUT)' })
-  @SwaggerResponse({ status: 200, description: 'แก้ไขสำเร็จ' })
-  @SwaggerResponse({ status: 404, description: 'ไม่พบสินค้า' })
-  @SwaggerResponse({ status: 400, description: 'ข้อมูลไม่ถูกต้อง' })
+  @Put(":id")
+  @ApiOperation({ summary: "แก้ไขสินค้าทั้งหมด (PUT)" })
+  @SwaggerResponse({ status: 200, description: "แก้ไขสำเร็จ" })
+  @SwaggerResponse({ status: 404, description: "ไม่พบสินค้า" })
+  @SwaggerResponse({ status: 400, description: "ข้อมูลไม่ถูกต้อง" })
   async update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: UpdateProductDto,
   ): Promise<ApiResponse<Product>> {
     const product = await this.productsService.update(id, dto);
     return {
       success: true,
-      message: 'Product updated successfully',
+      message: "Product updated successfully",
       data: product,
     };
   }
@@ -161,19 +194,19 @@ export class ProductsController {
   //
   // ⬇️ เขียน endpoint ของคุณด้านล่าง ⬇️
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'แก้ไขสินค้าบางส่วน (PATCH)' })
-  @SwaggerResponse({ status: 200, description: 'แก้ไขสำเร็จ' })
-  @SwaggerResponse({ status: 404, description: 'ไม่พบสินค้า' })
-  @SwaggerResponse({ status: 400, description: 'ข้อมูลไม่ถูกต้อง' })
+  @Patch(":id")
+  @ApiOperation({ summary: "แก้ไขสินค้าบางส่วน (PATCH)" })
+  @SwaggerResponse({ status: 200, description: "แก้ไขสำเร็จ" })
+  @SwaggerResponse({ status: 404, description: "ไม่พบสินค้า" })
+  @SwaggerResponse({ status: 400, description: "ข้อมูลไม่ถูกต้อง" })
   async patch(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() dto: PatchProductDto,
   ): Promise<ApiResponse<Product>> {
     const product = await this.productsService.patch(id, dto);
     return {
       success: true,
-      message: 'Product patched successfully',
+      message: "Product patched successfully",
       data: product,
     };
   }
@@ -189,15 +222,15 @@ export class ProductsController {
   //
   // ⬇️ เขียน endpoint ของคุณด้านล่าง ⬇️
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'ลบสินค้า' })
-  @SwaggerResponse({ status: 200, description: 'ลบสำเร็จ' })
-  @SwaggerResponse({ status: 404, description: 'ไม่พบสินค้า' })
-  async remove(@Param('id') id: string): Promise<ApiResponse<Product>> {
+  @Delete(":id")
+  @ApiOperation({ summary: "ลบสินค้า" })
+  @SwaggerResponse({ status: 200, description: "ลบสำเร็จ" })
+  @SwaggerResponse({ status: 404, description: "ไม่พบสินค้า" })
+  async remove(@Param("id") id: string): Promise<ApiResponse<Product>> {
     const product = await this.productsService.remove(id);
     return {
       success: true,
-      message: 'Product deleted successfully',
+      message: "Product deleted successfully",
       data: product,
     };
   }

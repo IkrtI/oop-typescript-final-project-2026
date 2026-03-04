@@ -11,7 +11,6 @@
  *    → ป้องกันการพิมพ์ผิด
  *    → TypeScript จะช่วยตรวจสอบให้ตอน compile
  *
- * 👤 Assigned to: Lukazx15 (ณัฐนันท์)
  * ═══════════════════════════════════════════════════════════════════════
  */
 
@@ -31,9 +30,9 @@
 // ⬇️ เติมค่า Enum ด้านล่าง ⬇️
 
 export enum ProductCategory {
-  ELECTRONICS = 'ELECTRONICS',
-  CLOTHING = 'CLOTHING',
-  HOME = 'HOME',
-  BEAUTY = 'BEAUTY',
-  OTHER = 'OTHER',
+  ELECTRONICS = "ELECTRONICS",
+  CLOTHING = "CLOTHING",
+  HOME = "HOME",
+  BEAUTY = "BEAUTY",
+  OTHER = "OTHER",
 }
