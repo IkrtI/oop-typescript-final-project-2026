@@ -34,6 +34,8 @@ import { ProductStatus } from './enums/product-status.enum';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PatchProductDto } from './dto/patch-product.dto';
+import { OrdersRepository } from '../orders/orders.repository';
+import { CustomersRepository } from '../customers/customers.repository';
 
 @Injectable()
 export class ProductsService {
@@ -42,7 +44,11 @@ export class ProductsService {
    * NestJS เห็น type "ProductsRepository" → สร้าง instance ให้อัตโนมัติ
    * "private readonly" → ใช้ได้เฉพาะใน class นี้ + แก้ไขค่าไม่ได้
    */
-  constructor(private readonly productsRepository: ProductsRepository) {}
+  constructor(
+    private readonly productsRepository: ProductsRepository,
+    private readonly ordersRepository: OrdersRepository,
+    private readonly customersRepository: CustomersRepository,
+  ) {}
 
   // ═══════════════════════════════════════════════════════════════════
   // 📗 READ OPERATIONS — เมธอดสำหรับอ่านข้อมูล
@@ -374,5 +380,130 @@ export class ProductsService {
     // บันทึกลง Repository แล้ว return
     await this.productsRepository.update(productId, product);
     return product;
+  }
+
+  async findCustomersByProduct(productId: string): Promise<
+    Array<{
+      customerId: string;
+      fullName: string;
+      email: string;
+      totalQuantity: number;
+      totalSpent: number;
+      orderCount: number;
+      lastPurchasedAt: string | null;
+    }>
+  > {
+    await this.findOne(productId);
+
+    const [orders, customers] = await Promise.all([
+      this.ordersRepository.findAll(),
+      this.customersRepository.findAll(),
+    ]);
+
+    const customerMap = new Map(
+      customers.map((customer) => [customer.id, customer]),
+    );
+
+    const grouped = new Map<
+      string,
+      {
+        customerId: string;
+        totalQuantity: number;
+        totalSpent: number;
+        orderCount: number;
+        lastPurchasedAt: string | null;
+      }
+    >();
+
+    for (const order of orders) {
+      const orderItems = order.items.filter((item) => item.productId === productId);
+      if (orderItems.length === 0) {
+        continue;
+      }
+
+      const row = grouped.get(order.customerId) ?? {
+        customerId: order.customerId,
+        totalQuantity: 0,
+        totalSpent: 0,
+        orderCount: 0,
+        lastPurchasedAt: null,
+      };
+
+      row.orderCount += 1;
+      if (!row.lastPurchasedAt || row.lastPurchasedAt < order.placedAt) {
+        row.lastPurchasedAt = order.placedAt;
+      }
+
+      for (const item of orderItems) {
+        row.totalQuantity += item.quantity;
+        row.totalSpent += item.subtotal;
+      }
+
+      grouped.set(order.customerId, row);
+    }
+
+    return [...grouped.values()]
+      .map((row) => {
+        const customer = customerMap.get(row.customerId);
+        return {
+          customerId: row.customerId,
+          fullName: customer?.fullName ?? 'Unknown customer',
+          email: customer?.email ?? '-',
+          totalQuantity: row.totalQuantity,
+          totalSpent: row.totalSpent,
+          orderCount: row.orderCount,
+          lastPurchasedAt: row.lastPurchasedAt,
+        };
+      })
+      .sort((a, b) => b.totalQuantity - a.totalQuantity);
+  }
+
+  async findMostBoughtProducts(limit = 10): Promise<
+    Array<{
+      productId: string;
+      productName: string;
+      totalQuantity: number;
+      totalRevenue: number;
+      buyerCount: number;
+    }>
+  > {
+    const orders = await this.ordersRepository.findAll();
+    const grouped = new Map<
+      string,
+      {
+        productId: string;
+        productName: string;
+        totalQuantity: number;
+        totalRevenue: number;
+        buyers: Set<string>;
+      }
+    >();
+
+    for (const order of orders) {
+      for (const item of order.items) {
+        const row = grouped.get(item.productId) ?? {
+          productId: item.productId,
+          productName: item.productName,
+          totalQuantity: 0,
+          totalRevenue: 0,
+          buyers: new Set<string>(),
+        };
+        row.totalQuantity += item.quantity;
+        row.totalRevenue += item.subtotal;
+        row.buyers.add(order.customerId);
+        grouped.set(item.productId, row);
+      }
+    }
+
+    return [...grouped.values()]
+      .map((row) => ({
+        productId: row.productId,
+        productName: row.productName,
+        totalQuantity: row.totalQuantity,
+        totalRevenue: row.totalRevenue,
+        buyerCount: row.buyers.size,
+      }))
+      .sort((a, b) => b.totalQuantity - a.totalQuantity)
+      .slice(0, Math.max(1, limit));
   }
 }

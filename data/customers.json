@@ -1,0 +1,22 @@
+[
+  {
+    "id": "CUST-E2E-001",
+    "fullName": "Demo Customer",
+    "email": "cust-e2e-001@example.com",
+    "phone": "0800000001",
+    "address": "123 Test Street, Test City 10000",
+    "status": "ACTIVE",
+    "createdAt": "2026-03-04T00:00:00.000Z",
+    "updatedAt": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "id": "CUST-MULTI",
+    "fullName": "Multi Buyer",
+    "email": "cust-multi@example.com",
+    "phone": "0800000002",
+    "address": "456 Multi Street",
+    "status": "ACTIVE",
+    "createdAt": "2026-03-04T00:00:00.000Z",
+    "updatedAt": "2026-03-04T00:00:00.000Z"
+  }
+]

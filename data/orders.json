@@ -1,317 +1,46 @@
 [
   {
-    "id": "e256f9ca-2bb6-467e-b814-b625ad67398c",
+    "id": "c55a7eca-ff7b-4692-a337-429021b62431",
     "customerId": "CUST-E2E-001",
     "items": [
       {
-        "productId": "f0f9160e-9b0d-4a7d-93c0-e788548c25ae",
+        "productId": "8e2e385f-99b9-47c9-90a2-c76fe4903815",
         "productName": "Test Product",
-        "priceAtPurchase": 200,
-        "quantity": 3,
-        "subtotal": 600
+        "priceAtPurchase": 199.99,
+        "quantity": 1,
+        "subtotal": 199.99
       }
     ],
-    "totalAmount": 600,
+    "totalAmount": 199.99,
     "status": "PENDING",
     "paymentMethod": "CREDIT_CARD",
     "shippingAddress": "123 Test Street, Test City 10000",
     "trackingNumber": null,
     "note": null,
-    "placedAt": "2026-02-25T20:44:43.043Z",
-    "createdAt": "2026-02-25T20:44:43.043Z",
-    "updatedAt": "2026-02-25T20:44:43.043Z"
+    "placedAt": "2026-03-04T12:51:18.058Z",
+    "createdAt": "2026-03-04T12:51:18.058Z",
+    "updatedAt": "2026-03-04T12:51:18.058Z"
   },
   {
-    "id": "6bf71524-e260-4bc7-a860-74f5fb278ecb",
+    "id": "4bb818c5-5245-4314-9470-f163516b6163",
     "customerId": "CUST-E2E-001",
     "items": [
       {
-        "productId": "0cef90a0-f638-495d-8e78-c7d667299260",
+        "productId": "2bb20a6f-b5e1-4ffd-9039-b4061e9c6cbc",
         "productName": "Test Product",
-        "priceAtPurchase": 150,
+        "priceAtPurchase": 199.99,
         "quantity": 2,
-        "subtotal": 300
+        "subtotal": 399.98
       }
     ],
-    "totalAmount": 300,
+    "totalAmount": 399.98,
     "status": "PENDING",
     "paymentMethod": "CREDIT_CARD",
     "shippingAddress": "123 Test Street, Test City 10000",
     "trackingNumber": null,
     "note": null,
-    "placedAt": "2026-02-25T20:44:43.054Z",
-    "createdAt": "2026-02-25T20:44:43.054Z",
-    "updatedAt": "2026-02-25T20:44:43.054Z"
-  },
-  {
-    "id": "23a0acda-ae12-409e-875a-26aabde526bf",
-    "customerId": "CUST-MULTI",
-    "items": [
-      {
-        "productId": "51111671-a4ff-42e5-92d5-31ee4e48f2cc",
-        "productName": "Test Product",
-        "priceAtPurchase": 100,
-        "quantity": 2,
-        "subtotal": 200
-      },
-      {
-        "productId": "4efe39b3-13a9-4273-9d43-1e4c9408fca0",
-        "productName": "Test Product",
-        "priceAtPurchase": 250,
-        "quantity": 3,
-        "subtotal": 750
-      }
-    ],
-    "totalAmount": 950,
-    "status": "PENDING",
-    "paymentMethod": "BANK_TRANSFER",
-    "shippingAddress": "456 Multi Street",
-    "trackingNumber": null,
-    "note": null,
-    "placedAt": "2026-02-25T20:44:43.059Z",
-    "createdAt": "2026-02-25T20:44:43.059Z",
-    "updatedAt": "2026-02-25T20:44:43.059Z"
-  },
-  {
-    "id": "b7069dbb-0021-48e7-9baf-a7a6d9122a44",
-    "customerId": "CUST-E2E-001",
-    "items": [
-      {
-        "productId": "b9a46565-fcc8-4b8a-b1e9-185d92662773",
-        "productName": "Test Product",
-        "priceAtPurchase": 50,
-        "quantity": 1,
-        "subtotal": 50
-      }
-    ],
-    "totalAmount": 50,
-    "status": "COMPLETED",
-    "paymentMethod": "CREDIT_CARD",
-    "shippingAddress": "123 Test Street, Test City 10000",
-    "trackingNumber": "TH999888777",
-    "note": null,
-    "placedAt": "2026-02-25T20:44:43.066Z",
-    "createdAt": "2026-02-25T20:44:43.066Z",
-    "updatedAt": "2026-02-25T20:44:43.071Z"
-  },
-  {
-    "id": "8c2a7942-3403-41b0-8c2d-b6e6f7f4b80c",
-    "customerId": "CUST-E2E-001",
-    "items": [
-      {
-        "productId": "d188cbb3-112d-424a-b325-5b0d2ab9779c",
-        "productName": "Test Product",
-        "priceAtPurchase": 75,
-        "quantity": 1,
-        "subtotal": 75
-      }
-    ],
-    "totalAmount": 75,
-    "status": "PENDING",
-    "paymentMethod": "CREDIT_CARD",
-    "shippingAddress": "123 Test Street, Test City 10000",
-    "trackingNumber": null,
-    "note": "updated note",
-    "placedAt": "2026-02-25T20:44:43.075Z",
-    "createdAt": "2026-02-25T20:44:43.075Z",
-    "updatedAt": "2026-02-25T20:44:43.076Z"
-  },
-  {
-    "id": "6c488b15-0fd2-4268-8df1-bb86ff0f64c2",
-    "customerId": "CUST-E2E-001",
-    "items": [
-      {
-        "productId": "894b6e64-f48e-429d-8c28-1573919ef0a0",
-        "productName": "Test Product",
-        "priceAtPurchase": 100,
-        "quantity": 5,
-        "subtotal": 500
-      }
-    ],
-    "totalAmount": 500,
-    "status": "CANCELLED",
-    "paymentMethod": "CREDIT_CARD",
-    "shippingAddress": "123 Test Street, Test City 10000",
-    "trackingNumber": null,
-    "note": null,
-    "placedAt": "2026-02-25T20:44:43.080Z",
-    "createdAt": "2026-02-25T20:44:43.080Z",
-    "updatedAt": "2026-02-25T20:44:43.082Z"
-  },
-  {
-    "id": "ac5b99cb-c096-4819-9d3e-7154bc158a9b",
-    "customerId": "CUST-E2E-001",
-    "items": [
-      {
-        "productId": "4c60ccaa-65cd-4a0c-a7a3-7e6b55b89d5e",
-        "productName": "Test Product",
-        "priceAtPurchase": 60,
-        "quantity": 5,
-        "subtotal": 300
-      }
-    ],
-    "totalAmount": 300,
-    "status": "PENDING",
-    "paymentMethod": "CREDIT_CARD",
-    "shippingAddress": "123 Test Street, Test City 10000",
-    "trackingNumber": null,
-    "note": null,
-    "placedAt": "2026-02-25T20:44:43.099Z",
-    "createdAt": "2026-02-25T20:44:43.099Z",
-    "updatedAt": "2026-02-25T20:44:43.099Z"
-  },
-  {
-    "id": "cefb423d-1379-486f-a3c2-311f688e9fb7",
-    "customerId": "CUST-E2E-001",
-    "items": [
-      {
-        "productId": "f39f6b82-6890-4cb8-8ac6-a89e1841bbd0",
-        "productName": "Test Product",
-        "priceAtPurchase": 50,
-        "quantity": 1,
-        "subtotal": 50
-      }
-    ],
-    "totalAmount": 50,
-    "status": "PENDING",
-    "paymentMethod": "CREDIT_CARD",
-    "shippingAddress": "123 Test Street, Test City 10000",
-    "trackingNumber": null,
-    "note": null,
-    "placedAt": "2026-02-25T20:44:43.136Z",
-    "createdAt": "2026-02-25T20:44:43.136Z",
-    "updatedAt": "2026-02-25T20:44:43.136Z"
-  },
-  {
-    "id": "1f51c35e-c2e7-47f1-bbda-571ac6c4ba5e",
-    "customerId": "CUST-E2E-001",
-    "items": [
-      {
-        "productId": "dc712a09-095d-4cb4-880f-e0a93d77a532",
-        "productName": "Test Product",
-        "priceAtPurchase": 50,
-        "quantity": 1,
-        "subtotal": 50
-      }
-    ],
-    "totalAmount": 50,
-    "status": "COMPLETED",
-    "paymentMethod": "CREDIT_CARD",
-    "shippingAddress": "123 Test Street, Test City 10000",
-    "trackingNumber": null,
-    "note": null,
-    "placedAt": "2026-02-25T20:44:43.147Z",
-    "createdAt": "2026-02-25T20:44:43.147Z",
-    "updatedAt": "2026-02-25T20:44:43.215Z"
-  },
-  {
-    "id": "c78edc99-9229-4224-844e-3815d01db473",
-    "customerId": "CUST-E2E-001",
-    "items": [
-      {
-        "productId": "8840de45-38d1-4d47-8010-5e41421f8bb7",
-        "productName": "Test Product",
-        "priceAtPurchase": 50,
-        "quantity": 1,
-        "subtotal": 50
-      }
-    ],
-    "totalAmount": 50,
-    "status": "CANCELLED",
-    "paymentMethod": "CREDIT_CARD",
-    "shippingAddress": "123 Test Street, Test City 10000",
-    "trackingNumber": null,
-    "note": null,
-    "placedAt": "2026-02-25T20:44:43.232Z",
-    "createdAt": "2026-02-25T20:44:43.232Z",
-    "updatedAt": "2026-02-25T20:44:43.235Z"
-  },
-  {
-    "id": "e7a4f136-64b3-489c-8ebc-2813a53ce314",
-    "customerId": "CUST-E2E-001",
-    "items": [
-      {
-        "productId": "ae576aeb-ef54-4503-b4bc-525690b80720",
-        "productName": "Test Product",
-        "priceAtPurchase": 50,
-        "quantity": 1,
-        "subtotal": 50
-      }
-    ],
-    "totalAmount": 50,
-    "status": "SHIPPED",
-    "paymentMethod": "CREDIT_CARD",
-    "shippingAddress": "123 Test Street, Test City 10000",
-    "trackingNumber": null,
-    "note": null,
-    "placedAt": "2026-02-25T20:44:43.244Z",
-    "createdAt": "2026-02-25T20:44:43.244Z",
-    "updatedAt": "2026-02-25T20:44:43.247Z"
-  },
-  {
-    "id": "f358ae27-1eca-49e3-b608-6b992fac46ae",
-    "customerId": "CUST-E2E-001",
-    "items": [
-      {
-        "productId": "da8242a9-9054-4b5a-b60d-922c3fec3608",
-        "productName": "Test Product",
-        "priceAtPurchase": 50,
-        "quantity": 1,
-        "subtotal": 50
-      }
-    ],
-    "totalAmount": 50,
-    "status": "PENDING",
-    "paymentMethod": "CREDIT_CARD",
-    "shippingAddress": "123 Test Street, Test City 10000",
-    "trackingNumber": null,
-    "note": null,
-    "placedAt": "2026-02-25T20:44:43.251Z",
-    "createdAt": "2026-02-25T20:44:43.251Z",
-    "updatedAt": "2026-02-25T20:44:43.251Z"
-  },
-  {
-    "id": "40c84a7c-8b92-4a87-b9f5-33a14f568e19",
-    "customerId": "CUST-E2E-001",
-    "items": [
-      {
-        "productId": "3692dc7b-533b-4e67-9373-a2f1c40606c6",
-        "productName": "Test Product",
-        "priceAtPurchase": 500,
-        "quantity": 1,
-        "subtotal": 500
-      }
-    ],
-    "totalAmount": 500,
-    "status": "PENDING",
-    "paymentMethod": "CREDIT_CARD",
-    "shippingAddress": "123 Test Street, Test City 10000",
-    "trackingNumber": null,
-    "note": null,
-    "placedAt": "2026-02-25T20:44:43.257Z",
-    "createdAt": "2026-02-25T20:44:43.257Z",
-    "updatedAt": "2026-02-25T20:44:43.257Z"
-  },
-  {
-    "id": "ca29fdcc-9347-448f-b18c-91c025f8d74e",
-    "customerId": "CUST-E2E-001",
-    "items": [
-      {
-        "productId": "3ce68387-df1f-4ba1-bd55-9371c96c5992",
-        "productName": "Test Product",
-        "priceAtPurchase": 100,
-        "quantity": 5,
-        "subtotal": 500
-      }
-    ],
-    "totalAmount": 500,
-    "status": "CANCELLED",
-    "paymentMethod": "CREDIT_CARD",
-    "shippingAddress": "123 Test Street, Test City 10000",
-    "trackingNumber": null,
-    "note": null,
-    "placedAt": "2026-02-25T20:44:43.261Z",
-    "createdAt": "2026-02-25T20:44:43.261Z",
-    "updatedAt": "2026-02-25T20:44:43.268Z"
+    "placedAt": "2026-03-04T12:51:18.070Z",
+    "createdAt": "2026-03-04T12:51:18.070Z",
+    "updatedAt": "2026-03-04T12:51:18.070Z"
   }
 ]

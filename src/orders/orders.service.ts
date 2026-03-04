@@ -40,6 +40,7 @@ import { OrderStatus, VALID_ORDER_TRANSITIONS } from './enums/order-status.enum'
 import { ProductStatus } from '../products/enums/product-status.enum';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PatchOrderDto } from './dto/patch-order.dto';
+import { CustomersService } from '../customers/customers.service';
 
 @Injectable()
 export class OrdersService {
@@ -52,6 +53,7 @@ export class OrdersService {
   constructor(
     private readonly ordersRepository: OrdersRepository,
     private readonly productsService: ProductsService,
+    private readonly customersService: CustomersService,
   ) {}
 
   // ═══════════════════════════════════════════════════════════════════
@@ -153,6 +155,13 @@ export class OrdersService {
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
   async create(dto: CreateOrderDto): Promise<Order> {
+    const hasCustomer = await this.customersService.hasCustomer(dto.customerId);
+    if (!hasCustomer) {
+      throw new BadRequestException(
+        `Customer '${dto.customerId}' not found`,
+      );
+    }
+
     // ═══════════════════════════════════════════════════════
     // ขั้นที่ 1: ตรวจสอบสินค้าแต่ละรายการ + สร้าง OrderItem[]
     // ═══════════════════════════════════════════════════════

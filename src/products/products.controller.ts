@@ -30,6 +30,7 @@ import {
   Body,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse as SwaggerResponse } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
@@ -48,6 +49,20 @@ import { ApiResponse } from '../common/interfaces/api-response.interface';
 export class ProductsController {
   /** Inject ProductsService ผ่าน Constructor */
   constructor(private readonly productsService: ProductsService) {}
+
+  @Get('insights/most-bought')
+  @ApiOperation({ summary: 'สินค้ายอดนิยมจากประวัติการสั่งซื้อ' })
+  @SwaggerResponse({ status: 200, description: 'สำเร็จ' })
+  async mostBoughtInsights(@Query('limit') limit?: string): Promise<ApiResponse<any[]>> {
+    const ordered = await this.productsService.findMostBoughtProducts(
+      Number(limit ?? 10),
+    );
+    return {
+      success: true,
+      message: 'Most bought insights retrieved successfully',
+      data: ordered,
+    };
+  }
 
   // ═══════════════════════════════════════════════════════════════════
   // ✅ ตัวอย่าง: GET /products — ดึงสินค้าทั้งหมด
@@ -82,6 +97,19 @@ export class ProductsController {
       success: true,
       message: 'Product retrieved successfully',
       data: product,
+    };
+  }
+
+  @Get(':id/customers')
+  @ApiOperation({ summary: 'ดูว่าสินค้าชิ้นนี้ถูกซื้อโดยใครบ้าง' })
+  @SwaggerResponse({ status: 200, description: 'สำเร็จ' })
+  @SwaggerResponse({ status: 404, description: 'ไม่พบสินค้า' })
+  async findCustomersByProduct(@Param('id') id: string): Promise<ApiResponse<any[]>> {
+    const result = await this.productsService.findCustomersByProduct(id);
+    return {
+      success: true,
+      message: 'Customers by product retrieved successfully',
+      data: result,
     };
   }
 

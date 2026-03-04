@@ -26,20 +26,28 @@ import { OrdersController } from './orders/orders.controller';
 import { OrdersService } from './orders/orders.service';
 import { OrdersRepository } from './orders/orders.repository';
 
+// ── Customers Domain ──
+import { CustomersController } from './customers/customers.controller';
+import { CustomersService } from './customers/customers.service';
+import { CustomersRepository } from './customers/customers.repository';
+
 @Module({
   imports: [],
   controllers: [
     ProductsController,  // จัดการ HTTP requests สำหรับ /products
     OrdersController,    // จัดการ HTTP requests สำหรับ /orders
+    CustomersController, // จัดการ HTTP requests สำหรับ /customer
   ],
   providers: [
     // Repositories — ชั้นจัดเก็บข้อมูล
     ProductsRepository,
     OrdersRepository,
+    CustomersRepository,
 
     // Services — ชั้นตรรกะทางธุรกิจ
     ProductsService,
     OrdersService,
+    CustomersService,
   ],
 })
 export class AppModule {}

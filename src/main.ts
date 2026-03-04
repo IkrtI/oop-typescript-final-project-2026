@@ -26,11 +26,13 @@ async function bootstrap(): Promise<void> {
       '## Core Models\n' +
       '- **Product** — สินค้าในระบบ\n' +
       '- **Order** — คำสั่งซื้อ\n\n' +
+      '- **Customer** — ลูกค้าในระบบ\n\n' +
       'Swagger docs: http://localhost:3000/api',
     )
     .setVersion('1.0')
     .addTag('Products', 'จัดการสินค้า')
     .addTag('Orders', 'จัดการคำสั่งซื้อ')
+    .addTag('Customers', 'จัดการลูกค้าและประวัติการซื้อ')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

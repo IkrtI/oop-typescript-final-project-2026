@@ -9,6 +9,7 @@ import { join } from 'path';
 const DATA_DIR = join(process.cwd(), 'data');
 export const PRODUCTS_FILE = join(DATA_DIR, 'products.json');
 export const ORDERS_FILE = join(DATA_DIR, 'orders.json');
+export const CUSTOMERS_FILE = join(DATA_DIR, 'customers.json');
 
 /* ------------------------------------------------------------------ */
 /*  Data reset                                                         */
@@ -18,6 +19,36 @@ export const ORDERS_FILE = join(DATA_DIR, 'orders.json');
 export function resetDataFiles(): void {
   writeFileSync(PRODUCTS_FILE, '[]', 'utf-8');
   writeFileSync(ORDERS_FILE, '[]', 'utf-8');
+  writeFileSync(
+    CUSTOMERS_FILE,
+    JSON.stringify(
+      [
+        {
+          id: 'CUST-E2E-001',
+          fullName: 'Demo Customer',
+          email: 'cust-e2e-001@example.com',
+          phone: '0800000001',
+          address: '123 Test Street, Test City 10000',
+          status: 'ACTIVE',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: 'CUST-MULTI',
+          fullName: 'Multi Buyer',
+          email: 'cust-multi@example.com',
+          phone: '0800000002',
+          address: '456 Multi Street',
+          status: 'ACTIVE',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ],
+      null,
+      2,
+    ),
+    'utf-8',
+  );
 }
 
 /* ------------------------------------------------------------------ */
