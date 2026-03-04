@@ -404,5 +404,4 @@ export class OrdersService {
       await this.productsService.restoreStock(item.productId, item.quantity);
     }
   }
- }
 }
