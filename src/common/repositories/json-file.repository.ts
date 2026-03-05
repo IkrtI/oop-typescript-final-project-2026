@@ -81,7 +81,7 @@ export class JsonFileRepository<T extends BaseEntity> {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [bouquetofroses-03]: เขียน Atomic Write (เขียนไฟล์แบบปลอดภัย)
+  // 📌 เขียน Atomic Write (เขียนไฟล์แบบปลอดภัย)
   // ─────────────────────────────────────────────────────────────────
   // 💡 Concept: Atomic Write Strategy (กลยุทธ์การเขียนแบบอะตอม)
   //
@@ -150,7 +150,7 @@ export class JsonFileRepository<T extends BaseEntity> {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [bouquetofroses-04]: ค้นหาข้อมูลด้วย id
+  // 📌 ค้นหาข้อมูลด้วย id
   // ─────────────────────────────────────────────────────────────────
   // 💡 Concept: Array.find() + Nullish Coalescing (??)
   //
@@ -176,7 +176,7 @@ export class JsonFileRepository<T extends BaseEntity> {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [bouquetofroses-05]: เพิ่มข้อมูลใหม่ลงในคลัง
+  // 📌 เพิ่มข้อมูลใหม่ลงในคลัง
   // ─────────────────────────────────────────────────────────────────
   // 💡 Concept: Array.push() + Persistence (การบันทึกถาวร)
   //
@@ -230,7 +230,7 @@ export class JsonFileRepository<T extends BaseEntity> {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [bouquetofroses-06]: ลบข้อมูลด้วย id
+  // 📌 ลบข้อมูลด้วย id
   // ─────────────────────────────────────────────────────────────────
   // 💡 Concept: Array.findIndex() + Array.splice()
   //

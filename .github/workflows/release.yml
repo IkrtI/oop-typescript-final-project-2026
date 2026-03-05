@@ -63,8 +63,7 @@ jobs:
             docs \
             subjects \
             report.md \
-            annoucement.txt \
-            TODO-ASSIGNMENTS.md
+            annoucement.txt
 
           (cd release-artifacts && shasum -a 256 "${NAME}.zip" > "${NAME}.zip.sha256")
 

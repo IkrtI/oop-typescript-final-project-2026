@@ -22,7 +22,7 @@
  */
 
 // ─────────────────────────────────────────────────────────────────────
-// 📌 TODO [bouquetofroses-01]: สร้าง Abstract Class ชื่อ BaseEntity
+// 📌 สร้าง Abstract Class ชื่อ BaseEntity
 // ─────────────────────────────────────────────────────────────────────
 // 💡 TypeScript Concept: "abstract class" คือ class ที่ใช้เป็นแม่แบบ
 //    ไม่สามารถ new BaseEntity() ได้โดยตรง

@@ -20,7 +20,7 @@
  */
 
 // ─────────────────────────────────────────────────────────────────────
-// 📌 TODO [bouquetofroses-02]: สร้าง Generic Interface ชื่อ ApiResponse<T>
+// 📌 สร้าง Generic Interface ชื่อ ApiResponse<T>
 // ─────────────────────────────────────────────────────────────────────
 // 💡 TypeScript Concept: "interface" กำหนดรูปทรง (shape) ของ Object
 //    "Generic <T>" ทำให้ interface รองรับข้อมูลหลายชนิด

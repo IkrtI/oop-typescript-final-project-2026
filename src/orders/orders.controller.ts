@@ -63,7 +63,7 @@ export class OrdersController {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [pockypycok-07]: GET /orders/:id — ดูออเดอร์ตาม ID
+  // 📌 GET /orders/:id — ดูออเดอร์ตาม ID
   // ─────────────────────────────────────────────────────────────────
   // 💡 ดู pattern จาก ProductsController.findOne()
   // ⬇️ เขียน endpoint ของคุณด้านล่าง ⬇️
@@ -82,7 +82,7 @@ export class OrdersController {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [pockypycok-08]: POST /orders — สร้างออเดอร์ใหม่
+  // 📌 POST /orders — สร้างออเดอร์ใหม่
   // ─────────────────────────────────────────────────────────────────
   // 💡 ดู pattern จาก ProductsController.create()
   //   - ใช้ @HttpCode(HttpStatus.CREATED) สำหรับ status 201
@@ -108,7 +108,7 @@ export class OrdersController {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [pockypycok-09]: PATCH /orders/:id — อัปเดตออเดอร์
+  // 📌 PATCH /orders/:id — อัปเดตออเดอร์
   // ─────────────────────────────────────────────────────────────────
   // 💡 ดู pattern จาก ProductsController.patch()
   //
@@ -132,7 +132,7 @@ export class OrdersController {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [pockypycok-10]: DELETE /orders/:id — ลบออเดอร์
+  // 📌 DELETE /orders/:id — ลบออเดอร์
   // ─────────────────────────────────────────────────────────────────
   // 💡 ดู pattern จาก ProductsController.remove()
   //

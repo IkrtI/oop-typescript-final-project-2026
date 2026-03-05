@@ -82,7 +82,7 @@ export class OrdersService {
   // ═══════════════════════════════════════════════════════════════════
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [pockypycok-03]: Implement Create Order
+  // 📌 Implement Create Order
   // ─────────────────────────────────────────────────────────────────
   // 💡 นี่คือ method ที่ซับซ้อนที่สุดในระบบ ทำทีละขั้น!
   //
@@ -241,7 +241,7 @@ export class OrdersService {
   // ═══════════════════════════════════════════════════════════════════
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [pockypycok-04]: Implement Patch Order (State Machine)
+  // 📌 Implement Patch Order (State Machine)
   // ─────────────────────────────────────────────────────────────────
   // 💡 Concept: State Machine + Guard Clauses
   //
@@ -339,7 +339,7 @@ export class OrdersService {
   // ═══════════════════════════════════════════════════════════════════
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [pockypycok-05]: Implement Remove Order
+  // 📌 Implement Remove Order
   // ─────────────────────────────────────────────────────────────────
   // 💡 Concept: Delete with Side Effects (ลบ + ผลข้างเคียง)
   //
@@ -384,7 +384,7 @@ export class OrdersService {
   // ═══════════════════════════════════════════════════════════════════
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [pockypycok-06]: Implement Stock Restoration Helper
+  // 📌 Implement Stock Restoration Helper
   // ─────────────────────────────────────────────────────────────────
   // 💡 Concept: Private Helper Method
   //    → method นี้ใช้ภายใน class เท่านั้น (private)

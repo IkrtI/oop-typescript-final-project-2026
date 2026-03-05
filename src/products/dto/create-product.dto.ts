@@ -45,7 +45,7 @@ import { ProductStatus } from "../enums/product-status.enum";
  */
 export class CreateProductDto {
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [Lukazx15-02]: เพิ่ม Validation Decorators
+  // 📌 เพิ่ม Validation Decorators
   // ─────────────────────────────────────────────────────────────────
   // 💡 ดู pattern จากตัวอย่าง name ด้านล่างนี้ แล้วทำแบบเดียวกัน
   //    สำหรับ field อื่นๆ

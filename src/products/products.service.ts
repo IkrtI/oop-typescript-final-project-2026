@@ -83,7 +83,7 @@ export class ProductsService {
   // ═══════════════════════════════════════════════════════════════════
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [Lukazx15-03]: Implement Create Product
+  // 📌 Implement Create Product
   // ─────────────────────────────────────────────────────────────────
   // 💡 Concept: Object Creation + Unique Constraint
   //
@@ -145,7 +145,7 @@ export class ProductsService {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [Lukazx15-04]: Implement Update Product (PUT — แก้ไขทั้งหมด)
+  // 📌 Implement Update Product (PUT — แก้ไขทั้งหมด)
   // ─────────────────────────────────────────────────────────────────
   // 💡 Concept: Full Replacement + Unique Constraint Check
   //
@@ -221,7 +221,7 @@ export class ProductsService {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [Lukazx15-05]: Implement Patch Product (PATCH — แก้ไขบางส่วน)
+  // 📌 Implement Patch Product (PATCH — แก้ไขบางส่วน)
   // ─────────────────────────────────────────────────────────────────
   // 💡 Concept: Partial Update + Object Spread
   //
@@ -284,7 +284,7 @@ export class ProductsService {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [Lukazx15-06]: Implement Remove Product (DELETE)
+  // 📌 Implement Remove Product (DELETE)
   // ─────────────────────────────────────────────────────────────────
   // 💡 Concept: Delete with Existence Check
   //
@@ -316,7 +316,7 @@ export class ProductsService {
   // ═══════════════════════════════════════════════════════════════════
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [Lukazx15-07]: Implement Stock Deduction (ตัดสต็อก)
+  // 📌 Implement Stock Deduction (ตัดสต็อก)
   // ─────────────────────────────────────────────────────────────────
   // 💡 Method นี้จะถูกเรียกโดย OrdersService เมื่อมีคนสั่งซื้อ
   //
@@ -353,7 +353,7 @@ export class ProductsService {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [Lukazx15-08]: Implement Stock Restoration (คืนสต็อก)
+  // 📌 Implement Stock Restoration (คืนสต็อก)
   // ─────────────────────────────────────────────────────────────────
   // 💡 Method นี้จะถูกเรียกเมื่อยกเลิกหรือลบออเดอร์
   //

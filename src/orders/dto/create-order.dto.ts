@@ -37,7 +37,7 @@ import { CreateOrderItemDto } from "./create-order-item.dto";
 
 export class CreateOrderDto {
   // ─────────────────────────────────────────────────────────────────
-  // 📌 TODO [pockypycok-02]: ตรวจสอบว่า decorators ด้านล่างครบถ้วน
+  // 📌 ตรวจสอบว่า decorators ด้านล่างครบถ้วน
   // ─────────────────────────────────────────────────────────────────
   // 💡 ทุก field ต้องมี:
   //    1. @ApiProperty() → สำหรับเอกสาร Swagger
