@@ -34,12 +34,13 @@
           <label>ลูกค้า
             <select id="orderCustomerId" required></select>
           </label>
-          <label>สินค้า
-            <select id="orderProductId" required></select>
-          </label>
-          <label>จำนวน
-            <input id="orderQuantity" type="number" min="1" value="1" required />
-          </label>
+          <div>
+            <div class="section-head">
+              <label style="margin:0;">รายการสินค้า</label>
+              <button id="addOrderItemBtn" class="btn ghost" type="button">+ เพิ่มสินค้า</button>
+            </div>
+            <div id="orderItems" class="order-items"></div>
+          </div>
           <label>ชำระเงิน
             <select id="orderPaymentMethod" required>
               <option value="CREDIT_CARD">CREDIT_CARD</option>
@@ -146,6 +147,17 @@
   </main>
 
   <div id="toast" class="toast"></div>
+
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <h3 id="modalTitle">Modal</h3>
+        <button id="modalCloseBtn" class="btn ghost" type="button">Close</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
   <script src="./app.js"></script>
 </body>
 </html>

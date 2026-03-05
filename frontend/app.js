@@ -20,8 +20,8 @@ const els = {
 
   orderForm: document.getElementById('createOrderForm'),
   orderCustomerId: document.getElementById('orderCustomerId'),
-  orderProductId: document.getElementById('orderProductId'),
-  orderQuantity: document.getElementById('orderQuantity'),
+  orderItems: document.getElementById('orderItems'),
+  addOrderItemBtn: document.getElementById('addOrderItemBtn'),
   orderPaymentMethod: document.getElementById('orderPaymentMethod'),
   orderAddress: document.getElementById('orderAddress'),
   orderNote: document.getElementById('orderNote'),
@@ -50,7 +50,21 @@ const els = {
   customerAddress: document.getElementById('customerAddress'),
   customerStatus: document.getElementById('customerStatus'),
   resetCustomerFormBtn: document.getElementById('resetCustomerFormBtn'),
+
+  modalBackdrop: document.getElementById('modalBackdrop'),
+  modalTitle: document.getElementById('modalTitle'),
+  modalBody: document.getElementById('modalBody'),
+  modalCloseBtn: document.getElementById('modalCloseBtn'),
 };
+
+function esc(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 async function api(path, options = {}) {
   const response = await fetch(`${API}${path}`, {
@@ -194,13 +208,175 @@ function renderSelects() {
   const customerOptions = state.customers
     .map((customer) => `<option value="${customer.id}">${customer.fullName} (${customer.id})</option>`)
     .join('');
-  const productOptions = state.products
-    .map((product) => `<option value="${product.id}">${product.name} • stock ${product.stockQuantity}</option>`)
-    .join('');
 
   els.orderCustomerId.innerHTML = customerOptions;
   els.historyCustomerSelect.innerHTML = customerOptions;
-  els.orderProductId.innerHTML = productOptions;
+  renderOrderItemSelectors();
+}
+
+function productOptionsHTML(selectedProductId = '') {
+  return state.products
+    .map(
+      (product) =>
+        `<option value="${product.id}" ${product.id === selectedProductId ? 'selected' : ''}>${esc(product.name)} • stock ${product.stockQuantity}</option>`,
+    )
+    .join('');
+}
+
+function addOrderItemRow(selectedProductId = '', quantity = 1, showError = true) {
+  if (!state.products.length) {
+    if (showError) {
+      showToast('No product available for ordering', true);
+    }
+    return;
+  }
+
+  const row = document.createElement('div');
+  row.className = 'order-item-row';
+  row.innerHTML = `
+    <label>สินค้า
+      <select data-order-item-product required>
+        ${productOptionsHTML(selectedProductId || state.products[0].id)}
+      </select>
+    </label>
+    <label>จำนวน
+      <input data-order-item-qty type="number" min="1" value="${Number(quantity) || 1}" required />
+    </label>
+    <button class="btn ghost" data-order-item-remove type="button">ลบ</button>
+  `;
+  els.orderItems.appendChild(row);
+}
+
+function ensureOrderItemRows() {
+  if (!els.orderItems.querySelector('[data-order-item-product]')) {
+    addOrderItemRow('', 1, false);
+  }
+}
+
+function renderOrderItemSelectors() {
+  const rows = [...els.orderItems.querySelectorAll('.order-item-row')];
+  if (!rows.length) {
+    ensureOrderItemRows();
+    return;
+  }
+
+  rows.forEach((row) => {
+    const selectEl = row.querySelector('[data-order-item-product]');
+    const selected = selectEl.value;
+    selectEl.innerHTML = productOptionsHTML(selected);
+    if (!selectEl.value && state.products[0]) {
+      selectEl.value = state.products[0].id;
+    }
+  });
+}
+
+function collectOrderItems() {
+  const map = new Map();
+  const rows = [...els.orderItems.querySelectorAll('.order-item-row')];
+
+  rows.forEach((row) => {
+    const productId = row.querySelector('[data-order-item-product]').value;
+    const quantity = Number(row.querySelector('[data-order-item-qty]').value || 0);
+    if (!productId || quantity < 1) {
+      return;
+    }
+    const existing = map.get(productId) || 0;
+    map.set(productId, existing + quantity);
+  });
+
+  return [...map.entries()].map(([productId, quantity]) => ({ productId, quantity }));
+}
+
+function openModal(title, bodyHTML) {
+  els.modalTitle.textContent = title;
+  els.modalBody.innerHTML = bodyHTML;
+  els.modalBackdrop.classList.add('open');
+  els.modalBackdrop.setAttribute('aria-hidden', 'false');
+}
+
+function closeModal() {
+  els.modalBackdrop.classList.remove('open');
+  els.modalBackdrop.setAttribute('aria-hidden', 'true');
+  els.modalBody.innerHTML = '';
+}
+
+function productModalFormHTML(product) {
+  return `
+    <form id="productModalForm" class="stack compact">
+      <label>ชื่อสินค้า<input id="modalProductName" value="${esc(product.name)}" required /></label>
+      <label>รายละเอียด<input id="modalProductDescription" value="${esc(product.description)}" required /></label>
+      <label>ราคา<input id="modalProductPrice" type="number" min="1" step="0.01" value="${product.price}" required /></label>
+      <label>สต็อก<input id="modalProductStock" type="number" min="0" value="${product.stockQuantity}" required /></label>
+      <label>SKU<input id="modalProductSku" value="${esc(product.sku)}" required /></label>
+      <label>หมวดหมู่
+        <select id="modalProductCategory" required>
+          <option value="ELECTRONICS" ${product.category === 'ELECTRONICS' ? 'selected' : ''}>ELECTRONICS</option>
+          <option value="CLOTHING" ${product.category === 'CLOTHING' ? 'selected' : ''}>CLOTHING</option>
+          <option value="HOME_APPLIANCES" ${product.category === 'HOME_APPLIANCES' ? 'selected' : ''}>HOME_APPLIANCES</option>
+          <option value="BOOKS" ${product.category === 'BOOKS' ? 'selected' : ''}>BOOKS</option>
+          <option value="FOOD_BEVERAGES" ${product.category === 'FOOD_BEVERAGES' ? 'selected' : ''}>FOOD_BEVERAGES</option>
+        </select>
+      </label>
+      <label>แบรนด์<input id="modalProductBrand" value="${esc(product.brand)}" required /></label>
+      <label>รูปสินค้า URL<input id="modalProductImage" value="${esc(product.images[0] || '')}" required /></label>
+      <label>สถานะ
+        <select id="modalProductStatus" required>
+          <option value="ACTIVE" ${product.status === 'ACTIVE' ? 'selected' : ''}>ACTIVE</option>
+          <option value="OUT_OF_STOCK" ${product.status === 'OUT_OF_STOCK' ? 'selected' : ''}>OUT_OF_STOCK</option>
+          <option value="DISCONTINUED" ${product.status === 'DISCONTINUED' ? 'selected' : ''}>DISCONTINUED</option>
+        </select>
+      </label>
+      <div class="button-row">
+        <button class="btn primary" type="submit">บันทึกการแก้ไข</button>
+        <button class="btn ghost" type="button" data-modal-close>ยกเลิก</button>
+      </div>
+    </form>
+  `;
+}
+
+function customerModalFormHTML(customer) {
+  return `
+    <form id="customerModalForm" class="stack">
+      <label>ชื่อ<input id="modalCustomerName" value="${esc(customer.fullName)}" required /></label>
+      <label>Email<input id="modalCustomerEmail" type="email" value="${esc(customer.email)}" required /></label>
+      <label>Phone<input id="modalCustomerPhone" value="${esc(customer.phone)}" required /></label>
+      <label>Address<input id="modalCustomerAddress" value="${esc(customer.address)}" required /></label>
+      <label>Status
+        <select id="modalCustomerStatus" required>
+          <option value="ACTIVE" ${customer.status === 'ACTIVE' ? 'selected' : ''}>ACTIVE</option>
+          <option value="INACTIVE" ${customer.status === 'INACTIVE' ? 'selected' : ''}>INACTIVE</option>
+        </select>
+      </label>
+      <div class="button-row">
+        <button class="btn primary" type="submit">บันทึกการแก้ไข</button>
+        <button class="btn ghost" type="button" data-modal-close>ยกเลิก</button>
+      </div>
+    </form>
+  `;
+}
+
+function openConfirmDeleteModal({ title, detail, onConfirm }) {
+  openModal(
+    title,
+    `
+      <p>${detail}</p>
+      <p class="danger-note">การลบไม่สามารถย้อนกลับได้</p>
+      <div class="button-row">
+        <button id="confirmDeleteBtn" class="btn primary" type="button">ยืนยันลบ</button>
+        <button class="btn ghost" type="button" data-modal-close>ยกเลิก</button>
+      </div>
+    `,
+  );
+
+  document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+    try {
+      await onConfirm();
+      closeModal();
+      await refreshAll();
+    } catch (error) {
+      showToast(error.message, true);
+    }
+  });
 }
 
 async function renderInsights() {
@@ -285,14 +461,15 @@ function resetCustomerForm() {
 
 async function onCreateOrder(event) {
   event.preventDefault();
+  const items = collectOrderItems();
+  if (!items.length) {
+    showToast('กรุณาเพิ่มรายการสินค้าอย่างน้อย 1 รายการ', true);
+    return;
+  }
+
   const payload = {
     customerId: els.orderCustomerId.value,
-    items: [
-      {
-        productId: els.orderProductId.value,
-        quantity: Number(els.orderQuantity.value),
-      },
-    ],
+    items,
     paymentMethod: els.orderPaymentMethod.value,
     shippingAddress: els.orderAddress.value,
     note: els.orderNote.value || undefined,
@@ -304,6 +481,9 @@ async function onCreateOrder(event) {
       body: JSON.stringify(payload),
     });
     showToast('Order created');
+    els.orderNote.value = '';
+    els.orderItems.innerHTML = '';
+    ensureOrderItemRows();
     await refreshAll();
   } catch (error) {
     showToast(error.message, true);
@@ -391,42 +571,86 @@ async function onClickActions(event) {
     if (productEditId) {
       const product = state.products.find((item) => item.id === productEditId);
       if (!product) return;
-      els.productId.value = product.id;
-      els.productName.value = product.name;
-      els.productDescription.value = product.description;
-      els.productPrice.value = product.price;
-      els.productStock.value = product.stockQuantity;
-      els.productSku.value = product.sku;
-      els.productCategory.value = product.category;
-      els.productBrand.value = product.brand;
-      els.productImage.value = product.images[0] || '';
-      els.productStatus.value = product.status;
+
+      openModal('แก้ไขสินค้า', productModalFormHTML(product));
+      document.getElementById('productModalForm').addEventListener('submit', async (submitEvent) => {
+        submitEvent.preventDefault();
+        try {
+          await api(`/products/${product.id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+              name: document.getElementById('modalProductName').value,
+              description: document.getElementById('modalProductDescription').value,
+              price: Number(document.getElementById('modalProductPrice').value),
+              stockQuantity: Number(document.getElementById('modalProductStock').value),
+              sku: document.getElementById('modalProductSku').value,
+              category: document.getElementById('modalProductCategory').value,
+              brand: document.getElementById('modalProductBrand').value,
+              images: [document.getElementById('modalProductImage').value],
+              status: document.getElementById('modalProductStatus').value,
+            }),
+          });
+          closeModal();
+          showToast('Product updated');
+          await refreshAll();
+        } catch (error) {
+          showToast(error.message, true);
+        }
+      });
       return;
     }
 
     if (productDeleteId) {
-      await api(`/products/${productDeleteId}`, { method: 'DELETE' });
-      showToast('Product deleted');
-      await refreshAll();
+      const product = state.products.find((item) => item.id === productDeleteId);
+      openConfirmDeleteModal({
+        title: 'ลบสินค้า',
+        detail: `ต้องการลบสินค้า ${esc(product?.name || productDeleteId)} ใช่หรือไม่?`,
+        onConfirm: async () => {
+          await api(`/products/${productDeleteId}`, { method: 'DELETE' });
+          showToast('Product deleted');
+        },
+      });
       return;
     }
 
     if (customerEditId) {
       const customer = state.customers.find((item) => item.id === customerEditId);
       if (!customer) return;
-      els.customerId.value = customer.id;
-      els.customerName.value = customer.fullName;
-      els.customerEmail.value = customer.email;
-      els.customerPhone.value = customer.phone;
-      els.customerAddress.value = customer.address;
-      els.customerStatus.value = customer.status;
+
+      openModal('แก้ไขลูกค้า', customerModalFormHTML(customer));
+      document.getElementById('customerModalForm').addEventListener('submit', async (submitEvent) => {
+        submitEvent.preventDefault();
+        try {
+          await api(`/customer/${customer.id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+              fullName: document.getElementById('modalCustomerName').value,
+              email: document.getElementById('modalCustomerEmail').value,
+              phone: document.getElementById('modalCustomerPhone').value,
+              address: document.getElementById('modalCustomerAddress').value,
+              status: document.getElementById('modalCustomerStatus').value,
+            }),
+          });
+          closeModal();
+          showToast('Customer updated');
+          await refreshAll();
+        } catch (error) {
+          showToast(error.message, true);
+        }
+      });
       return;
     }
 
     if (customerDeleteId) {
-      await api(`/customer/${customerDeleteId}`, { method: 'DELETE' });
-      showToast('Customer deleted');
-      await refreshAll();
+      const customer = state.customers.find((item) => item.id === customerDeleteId);
+      openConfirmDeleteModal({
+        title: 'ลบลูกค้า',
+        detail: `ต้องการลบลูกค้า ${esc(customer?.fullName || customerDeleteId)} ใช่หรือไม่?`,
+        onConfirm: async () => {
+          await api(`/customer/${customerDeleteId}`, { method: 'DELETE' });
+          showToast('Customer deleted');
+        },
+      });
       return;
     }
 
@@ -448,13 +672,40 @@ async function onClickActions(event) {
   }
 }
 
+function onModalInteractions(event) {
+  if (event.target.matches('[data-modal-close]') || event.target === els.modalBackdrop) {
+    closeModal();
+  }
+
+  if (event.target.matches('[data-order-item-remove]')) {
+    event.target.closest('.order-item-row')?.remove();
+    ensureOrderItemRows();
+  }
+}
+
+function onAddOrderItem() {
+  addOrderItemRow();
+}
+
+function onGlobalKeydown(event) {
+  if (event.key === 'Escape' && els.modalBackdrop.classList.contains('open')) {
+    closeModal();
+  }
+}
+
 els.refreshAllBtn.addEventListener('click', refreshAll);
 els.orderForm.addEventListener('submit', onCreateOrder);
+els.addOrderItemBtn.addEventListener('click', onAddOrderItem);
 els.loadHistoryBtn.addEventListener('click', loadCustomerHistory);
 els.productForm.addEventListener('submit', onSaveProduct);
 els.customerForm.addEventListener('submit', onSaveCustomer);
 els.resetProductFormBtn.addEventListener('click', resetProductForm);
 els.resetCustomerFormBtn.addEventListener('click', resetCustomerForm);
 document.body.addEventListener('click', onClickActions);
+document.body.addEventListener('click', onModalInteractions);
+els.modalCloseBtn.addEventListener('click', closeModal);
+window.addEventListener('keydown', onGlobalKeydown);
+
+ensureOrderItemRows();
 
 refreshAll();
