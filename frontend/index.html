@@ -3,158 +3,121 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Commerce Pulse Dashboard</title>
+  <title>Nebula Commerce Console</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    body { font-family: "Sarabun", sans-serif; }
+    .heading-font { font-family: "Space Grotesk", sans-serif; }
+  </style>
 </head>
-<body>
-  <div class="bg-orb orb-a"></div>
-  <div class="bg-orb orb-b"></div>
-  <header class="shell hero">
-    <div>
-      <p class="kicker">E-commerce Control Center</p>
-      <h1>Commerce Pulse Dashboard</h1>
-      <p class="lead">จัดการลูกค้า สินค้า คำสั่งซื้อ และดูพฤติกรรมการซื้อได้ในหน้าจอเดียว</p>
-    </div>
-    <div class="hero-actions">
-      <button id="refreshAllBtn" class="btn primary">Refresh Data</button>
-      <span id="apiStatus" class="api-status">API: checking...</span>
-    </div>
-  </header>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-fuchsia-950 text-slate-100">
+  <div class="mx-auto w-[min(1400px,calc(100vw-2rem))] py-6 md:py-8">
+    <header class="rounded-2xl border border-violet-400/30 bg-slate-900/65 p-5 shadow-2xl shadow-fuchsia-900/20 backdrop-blur-lg md:p-7">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p class="heading-font text-xs font-bold uppercase tracking-[0.2em] text-fuchsia-300">Nebula Commerce</p>
+          <h1 class="heading-font mt-2 text-3xl font-bold leading-tight text-violet-100 md:text-4xl">Unified Operations Console</h1>
+          <p class="mt-2 text-sm text-slate-300 md:text-base">ดูความสัมพันธ์ Customers, Orders, Products ได้ครบทุกมิติ พร้อมจัดการข้อมูลจากหน้าเดียว</p>
+        </div>
+        <div class="grid gap-2 sm:grid-cols-2 lg:w-[420px]">
+          <button id="refreshAllBtn" class="rounded-xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-pink-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-fuchsia-900/40 transition hover:scale-[1.02]">Refresh Data</button>
+          <div id="apiStatus" class="rounded-xl border border-violet-300/40 bg-slate-950/60 px-4 py-2.5 text-sm text-violet-200">API: checking...</div>
+          <button id="openCreateProductBtn" class="rounded-xl border border-indigo-300/40 bg-indigo-500/20 px-4 py-2.5 text-sm font-semibold text-indigo-100 transition hover:bg-indigo-500/30">+ Create Product</button>
+          <button id="openCreateCustomerBtn" class="rounded-xl border border-fuchsia-300/40 bg-fuchsia-500/20 px-4 py-2.5 text-sm font-semibold text-fuchsia-100 transition hover:bg-fuchsia-500/30">+ Create Customer</button>
+        </div>
+      </div>
+    </header>
 
-  <main class="shell grid-root">
-    <section class="card stats" id="statsCards"></section>
+    <section id="statsCards" class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"></section>
 
-    <section class="card split">
-      <div>
-        <h2>ซื้อสินค้า</h2>
-        <form id="createOrderForm" class="stack">
-          <label>ลูกค้า
-            <select id="orderCustomerId" required></select>
+    <div class="mt-5 grid gap-5 xl:grid-cols-[1.15fr_1fr]">
+      <section class="rounded-2xl border border-indigo-300/25 bg-slate-900/60 p-4 shadow-xl shadow-indigo-950/30">
+        <h2 class="heading-font text-xl font-semibold text-violet-100">Smart Order Composer</h2>
+        <p class="mt-1 text-sm text-slate-300">สร้างออเดอร์หลายสินค้าในคำสั่งเดียว และเห็นภาพรวมคำสั่งซื้อล่าสุดพร้อมอัปเดตสถานะได้ทันที</p>
+
+        <form id="createOrderForm" class="mt-4 grid gap-3">
+          <label class="text-sm text-slate-300">Customer
+            <select id="orderCustomerId" required class="mt-1 w-full rounded-xl border border-indigo-300/35 bg-slate-950/70 px-3 py-2 text-slate-100 outline-none focus:border-fuchsia-400"></select>
           </label>
+
           <div>
-            <div class="section-head">
-              <label style="margin:0;">รายการสินค้า</label>
-              <button id="addOrderItemBtn" class="btn ghost" type="button">+ เพิ่มสินค้า</button>
+            <div class="mb-2 flex items-center justify-between">
+              <p class="text-sm text-slate-300">Order Items</p>
+              <button id="addOrderItemBtn" type="button" class="rounded-lg border border-violet-300/40 bg-violet-500/20 px-3 py-1.5 text-xs font-semibold text-violet-100">+ Add Item</button>
             </div>
-            <div id="orderItems" class="order-items"></div>
+            <div id="orderItems" class="grid gap-2"></div>
           </div>
-          <label>ชำระเงิน
-            <select id="orderPaymentMethod" required>
-              <option value="CREDIT_CARD">CREDIT_CARD</option>
-              <option value="BANK_TRANSFER">BANK_TRANSFER</option>
-              <option value="COD">COD</option>
-            </select>
-          </label>
-          <label>ที่อยู่จัดส่ง
-            <textarea id="orderAddress" rows="2" required>123 Test Street, Test City 10000</textarea>
-          </label>
-          <label>หมายเหตุ
-            <input id="orderNote" type="text" placeholder="optional" />
-          </label>
-          <button class="btn primary" type="submit">สร้างคำสั่งซื้อ</button>
-        </form>
-      </div>
-      <div>
-        <h2>สถานะคำสั่งซื้อ</h2>
-        <div id="ordersList" class="list"></div>
-      </div>
-    </section>
 
-    <section class="card split">
-      <div>
-        <h2>Customer History</h2>
-        <label>เลือกลูกค้า
-          <select id="historyCustomerSelect"></select>
-        </label>
-        <button id="loadHistoryBtn" class="btn ghost">โหลดประวัติการซื้อ</button>
-        <div id="customerHistory" class="history-box"></div>
-      </div>
-      <div>
-        <h2>Product Manager</h2>
-        <form id="productForm" class="stack compact">
-          <input id="productId" type="hidden" />
-          <label>ชื่อสินค้า<input id="productName" required /></label>
-          <label>รายละเอียด<input id="productDescription" required /></label>
-          <label>ราคา<input id="productPrice" type="number" min="1" step="0.01" required /></label>
-          <label>สต็อก<input id="productStock" type="number" min="0" required /></label>
-          <label>SKU<input id="productSku" required /></label>
-          <label>หมวดหมู่
-            <select id="productCategory" required>
-              <option>ELECTRONICS</option>
-              <option>CLOTHING</option>
-              <option>HOME_APPLIANCES</option>
-              <option>BOOKS</option>
-              <option>FOOD_BEVERAGES</option>
-            </select>
-          </label>
-          <label>แบรนด์<input id="productBrand" required /></label>
-          <label>รูปสินค้า URL<input id="productImage" required /></label>
-          <label>สถานะ
-            <select id="productStatus" required>
-              <option>ACTIVE</option>
-              <option>OUT_OF_STOCK</option>
-              <option>DISCONTINUED</option>
-            </select>
-          </label>
-          <div class="button-row">
-            <button class="btn primary" type="submit">บันทึกสินค้า</button>
-            <button id="resetProductFormBtn" class="btn ghost" type="button">ล้างฟอร์ม</button>
+          <div class="grid gap-3 md:grid-cols-2">
+            <label class="text-sm text-slate-300">Payment
+              <select id="orderPaymentMethod" required class="mt-1 w-full rounded-xl border border-indigo-300/35 bg-slate-950/70 px-3 py-2 text-slate-100 outline-none focus:border-fuchsia-400">
+                <option value="CREDIT_CARD">CREDIT_CARD</option>
+                <option value="BANK_TRANSFER">BANK_TRANSFER</option>
+                <option value="COD">COD</option>
+              </select>
+            </label>
+            <label class="text-sm text-slate-300">Note
+              <input id="orderNote" type="text" placeholder="optional" class="mt-1 w-full rounded-xl border border-indigo-300/35 bg-slate-950/70 px-3 py-2 text-slate-100 outline-none focus:border-fuchsia-400" />
+            </label>
           </div>
-        </form>
-      </div>
-    </section>
 
-    <section class="card split">
-      <div>
-        <h2>Customers</h2>
-        <form id="customerForm" class="stack compact">
-          <input id="customerId" type="hidden" />
-          <label>ชื่อ<input id="customerName" required /></label>
-          <label>Email<input id="customerEmail" type="email" required /></label>
-          <label>Phone<input id="customerPhone" required /></label>
-          <label>Address<input id="customerAddress" required /></label>
-          <label>Status
-            <select id="customerStatus">
-              <option>ACTIVE</option>
-              <option>INACTIVE</option>
-            </select>
+          <label class="text-sm text-slate-300">Shipping Address
+            <textarea id="orderAddress" rows="2" required class="mt-1 w-full rounded-xl border border-indigo-300/35 bg-slate-950/70 px-3 py-2 text-slate-100 outline-none focus:border-fuchsia-400">123 Test Street, Test City 10000</textarea>
           </label>
-          <div class="button-row">
-            <button class="btn primary" type="submit">บันทึกลูกค้า</button>
-            <button id="resetCustomerFormBtn" class="btn ghost" type="button">ล้างฟอร์ม</button>
-          </div>
+
+          <button type="submit" class="rounded-xl bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-900/40">Create Order</button>
         </form>
+
+        <div class="mt-5">
+          <h3 class="heading-font text-lg font-semibold text-violet-100">Orders Explorer</h3>
+          <p class="mb-2 text-xs text-slate-400">ดูว่าแต่ละ Order มีสินค้าอะไร และใครเป็นคนซื้อ พร้อมแก้สถานะ</p>
+          <div id="ordersList" class="grid max-h-[460px] gap-2 overflow-auto pr-1"></div>
+        </div>
+      </section>
+
+      <section class="grid gap-5">
+        <article class="rounded-2xl border border-fuchsia-300/25 bg-slate-900/60 p-4 shadow-xl shadow-fuchsia-950/30">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="heading-font text-xl font-semibold text-fuchsia-100">Customers Explorer</h2>
+              <p class="text-xs text-slate-400">ลูกค้าคนนี้มี Orders อะไร และในแต่ละ order มีสินค้าอะไรบ้าง</p>
+            </div>
+            <button id="loadHistoryBtn" class="rounded-lg border border-fuchsia-300/40 bg-fuchsia-500/20 px-3 py-1.5 text-xs font-semibold text-fuchsia-100">Load Selected</button>
+          </div>
+          <label class="mt-3 block text-sm text-slate-300">Select Customer
+            <select id="historyCustomerSelect" class="mt-1 w-full rounded-xl border border-fuchsia-300/35 bg-slate-950/70 px-3 py-2 text-slate-100 outline-none focus:border-pink-400"></select>
+          </label>
+          <div id="customerHistory" class="mt-3 rounded-xl border border-fuchsia-300/20 bg-slate-950/55 p-3"></div>
+          <div id="customersTable" class="mt-3 max-h-[260px] overflow-auto rounded-xl border border-fuchsia-300/20"></div>
+        </article>
+
+        <article class="rounded-2xl border border-indigo-300/25 bg-slate-900/60 p-4 shadow-xl shadow-indigo-950/30">
+          <h2 class="heading-font text-xl font-semibold text-indigo-100">Products Explorer</h2>
+          <p class="text-xs text-slate-400">สินค้านี้ขายได้กี่ชิ้น ซื้อโดยใครบ้าง และซื้อไปเท่าไหร่</p>
+          <div id="insightsTopProducts" class="mt-3 rounded-xl border border-indigo-300/20 bg-slate-950/55 p-3"></div>
+          <div id="productsTable" class="mt-3 max-h-[290px] overflow-auto rounded-xl border border-indigo-300/20"></div>
+        </article>
+
+        <article class="rounded-2xl border border-violet-300/25 bg-slate-900/60 p-4 shadow-xl shadow-violet-950/30">
+          <h2 class="heading-font text-xl font-semibold text-violet-100">Market Insight</h2>
+          <div id="insightsTopBuyers" class="mt-3 rounded-xl border border-violet-300/20 bg-slate-950/55 p-3"></div>
+        </article>
+      </section>
+    </div>
+  </div>
+
+  <div id="toast" class="pointer-events-none fixed bottom-5 right-5 z-50 rounded-xl px-4 py-2 text-sm font-semibold text-white opacity-0 transition"></div>
+
+  <div id="modalBackdrop" class="fixed inset-0 z-40 hidden items-center justify-center bg-slate-950/70 p-4" aria-hidden="true">
+    <div class="w-[min(760px,100%)] max-h-[92vh] overflow-auto rounded-2xl border border-violet-300/30 bg-slate-900 p-5 shadow-2xl shadow-violet-950/40" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="mb-4 flex items-center justify-between">
+        <h3 id="modalTitle" class="heading-font text-lg font-semibold text-violet-100">Modal</h3>
+        <button id="modalCloseBtn" class="rounded-lg border border-slate-500/60 px-3 py-1.5 text-xs font-semibold text-slate-200" type="button">Close</button>
       </div>
-      <div>
-        <h2>Insights</h2>
-        <div id="insightsTopBuyers" class="history-box"></div>
-        <div id="insightsTopProducts" class="history-box"></div>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Products Table</h2>
-      <div id="productsTable" class="table-wrap"></div>
-    </section>
-
-    <section class="card">
-      <h2>Customers Table</h2>
-      <div id="customersTable" class="table-wrap"></div>
-    </section>
-  </main>
-
-  <div id="toast" class="toast"></div>
-
-  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div class="modal-header">
-        <h3 id="modalTitle">Modal</h3>
-        <button id="modalCloseBtn" class="btn ghost" type="button">Close</button>
-      </div>
-      <div id="modalBody" class="modal-body"></div>
+      <div id="modalBody"></div>
     </div>
   </div>
 
