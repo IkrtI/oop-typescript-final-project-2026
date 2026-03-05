@@ -55,8 +55,7 @@ async function bootstrap(): Promise<void> {
         "## Core Models\n" +
         "- **Product** — สินค้าในระบบ\n" +
         "- **Order** — คำสั่งซื้อ\n\n" +
-        "- **Customer** — ลูกค้าในระบบ\n\n" +
-        "Swagger docs: http://localhost:3000/api",
+        "- **Customer** — ลูกค้าในระบบ\n\n"
     )
     .setVersion("1.0")
     .addTag("Products", "จัดการสินค้า")
