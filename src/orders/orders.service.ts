@@ -31,7 +31,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from "@nestjs/common";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import { OrdersRepository } from "./orders.repository";
 import { ProductsService } from "../products/products.service";
 import { Order } from "./entities/order.entity";
@@ -216,7 +216,7 @@ export class OrdersService {
     // ═══════════════════════════════════════════════════════
     const now = new Date().toISOString();
     const order: Order = {
-      id: uuidv4(),
+      id: randomUUID(),
       customerId: dto.customerId,
       items: orderItems,
       totalAmount,

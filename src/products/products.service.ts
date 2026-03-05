@@ -27,7 +27,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from "@nestjs/common";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import { ProductsRepository } from "./products.repository";
 import { Product } from "./entities/product.entity";
 import { ProductStatus } from "./enums/product-status.enum";
@@ -125,7 +125,7 @@ export class ProductsService {
     // ── ขั้นที่ 2: สร้าง Product object ใหม่จากข้อมูลที่รับมา ──
     const now = new Date().toISOString();
     const product: Product = {
-      id: uuidv4(), // สร้าง UUID ใหม่ให้สินค้า
+      id: randomUUID(), // สร้าง UUID ใหม่ให้สินค้า
       name: dto.name,
       description: dto.description,
       price: dto.price,

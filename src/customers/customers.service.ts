@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import { CustomersRepository } from "./customers.repository";
 import { OrdersRepository } from "../orders/orders.repository";
 import { ProductsRepository } from "../products/products.repository";
@@ -38,7 +38,7 @@ export class CustomersService {
 
     const now = new Date().toISOString();
     const customer: Customer = {
-      id: uuidv4(),
+      id: randomUUID(),
       fullName: dto.fullName,
       email: dto.email.toLowerCase(),
       phone: dto.phone,
