@@ -1,36 +1,546 @@
 [
   {
-    "id": "57398124-8f52-4e96-aea3-11e484d6adce",
-    "name": "Test Product",
-    "description": "A product created by E2E tests",
-    "price": 199.99,
-    "stockQuantity": 49,
-    "sku": "TEST-1772631519951-1",
+    "id": "97ab3e8c-2ec6-44a2-8adb-38e1211da6fe",
+    "name": "iPhone 15",
+    "description": "iPhone 15 original Apple device with official Thailand warranty",
+    "price": 28900,
+    "stockQuantity": 42,
+    "sku": "APPLE-001",
     "category": "ELECTRONICS",
-    "brand": "TestBrand",
+    "brand": "Apple",
     "images": [
-      "https://example.com/img.jpg"
+      "https://example.com/apple/001.jpg"
     ],
     "weight": null,
     "status": "ACTIVE",
-    "createdAt": "2026-03-04T13:38:39.952Z",
-    "updatedAt": "2026-03-04T13:38:39.954Z"
+    "createdAt": "2025-12-15T17:09:00.444Z",
+    "updatedAt": "2025-12-16T17:09:00.444Z"
   },
   {
-    "id": "edb1f1d5-1893-43e9-9fa2-933436ba87e5",
-    "name": "Test Product",
-    "description": "A product created by E2E tests",
-    "price": 199.99,
-    "stockQuantity": 48,
-    "sku": "SKU-1772631519959",
+    "id": "46928173-7d28-4a6e-8531-d4177c93886a",
+    "name": "iPhone 15 Plus",
+    "description": "iPhone 15 Plus original Apple device with official Thailand warranty",
+    "price": 32900,
+    "stockQuantity": 35,
+    "sku": "APPLE-002",
     "category": "ELECTRONICS",
-    "brand": "TestBrand",
+    "brand": "Apple",
     "images": [
-      "https://example.com/img.jpg"
+      "https://example.com/apple/002.jpg"
     ],
     "weight": null,
     "status": "ACTIVE",
-    "createdAt": "2026-03-04T13:38:39.960Z",
-    "updatedAt": "2026-03-04T13:38:39.962Z"
+    "createdAt": "2025-12-16T17:09:00.444Z",
+    "updatedAt": "2025-12-17T17:09:00.444Z"
+  },
+  {
+    "id": "db53529a-49b4-4626-a0ab-defa08fa9662",
+    "name": "iPhone 15 Pro",
+    "description": "iPhone 15 Pro original Apple device with official Thailand warranty",
+    "price": 41900,
+    "stockQuantity": 28,
+    "sku": "APPLE-003",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/003.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-17T17:09:00.444Z",
+    "updatedAt": "2025-12-18T17:09:00.444Z"
+  },
+  {
+    "id": "446a7022-a048-40da-be6e-d370d8f483e0",
+    "name": "iPhone 15 Pro Max",
+    "description": "iPhone 15 Pro Max original Apple device with official Thailand warranty",
+    "price": 48900,
+    "stockQuantity": 25,
+    "sku": "APPLE-004",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/004.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-18T17:09:00.444Z",
+    "updatedAt": "2025-12-19T17:09:00.444Z"
+  },
+  {
+    "id": "25895d28-315e-47a0-a0db-6aa9bb85115a",
+    "name": "iPhone 14",
+    "description": "iPhone 14 original Apple device with official Thailand warranty",
+    "price": 24900,
+    "stockQuantity": 31,
+    "sku": "APPLE-005",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/005.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-19T17:09:00.444Z",
+    "updatedAt": "2025-12-20T17:09:00.444Z"
+  },
+  {
+    "id": "1172c70a-9ae1-42c3-a252-25ee130d9266",
+    "name": "iPhone 14 Plus",
+    "description": "iPhone 14 Plus original Apple device with official Thailand warranty",
+    "price": 28900,
+    "stockQuantity": 22,
+    "sku": "APPLE-006",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/006.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-20T17:09:00.444Z",
+    "updatedAt": "2025-12-21T17:09:00.444Z"
+  },
+  {
+    "id": "26f3cac7-93a3-41d1-a942-4d76a79b4202",
+    "name": "iPhone SE (3rd Gen)",
+    "description": "iPhone SE (3rd Gen) original Apple device with official Thailand warranty",
+    "price": 15900,
+    "stockQuantity": 17,
+    "sku": "APPLE-007",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/007.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-21T17:09:00.444Z",
+    "updatedAt": "2025-12-22T17:09:00.444Z"
+  },
+  {
+    "id": "1602f36e-7b0a-4840-9108-a0fb13f8e74e",
+    "name": "iPad 10th Gen",
+    "description": "iPad 10th Gen original Apple device with official Thailand warranty",
+    "price": 13900,
+    "stockQuantity": 27,
+    "sku": "APPLE-008",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/008.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-22T17:09:00.444Z",
+    "updatedAt": "2025-12-23T17:09:00.444Z"
+  },
+  {
+    "id": "2d0c0550-bfe7-412e-a0bb-8ae45b13df29",
+    "name": "iPad Air M2",
+    "description": "iPad Air M2 original Apple device with official Thailand warranty",
+    "price": 23900,
+    "stockQuantity": 20,
+    "sku": "APPLE-009",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/009.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-23T17:09:00.444Z",
+    "updatedAt": "2025-12-24T17:09:00.444Z"
+  },
+  {
+    "id": "8f916b1a-78a2-4968-bdcc-5680b5ccbd45",
+    "name": "iPad Pro 11 M4",
+    "description": "iPad Pro 11 M4 original Apple device with official Thailand warranty",
+    "price": 39900,
+    "stockQuantity": 16,
+    "sku": "APPLE-010",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/010.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-24T17:09:00.444Z",
+    "updatedAt": "2025-12-25T17:09:00.444Z"
+  },
+  {
+    "id": "ca4dc6ff-a8fe-4b17-8bb4-4480395017e2",
+    "name": "iPad Pro 13 M4",
+    "description": "iPad Pro 13 M4 original Apple device with official Thailand warranty",
+    "price": 47900,
+    "stockQuantity": 12,
+    "sku": "APPLE-011",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/011.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-25T17:09:00.444Z",
+    "updatedAt": "2025-12-26T17:09:00.444Z"
+  },
+  {
+    "id": "d7f70dab-396b-48dd-b967-b342d25c3af1",
+    "name": "iPad mini",
+    "description": "iPad mini original Apple device with official Thailand warranty",
+    "price": 19900,
+    "stockQuantity": 18,
+    "sku": "APPLE-012",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/012.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-26T17:09:00.444Z",
+    "updatedAt": "2025-12-27T17:09:00.444Z"
+  },
+  {
+    "id": "9beb2898-c62e-48ca-83a6-cbec21a2a35d",
+    "name": "MacBook Air 13 M3",
+    "description": "MacBook Air 13 M3 original Apple device with official Thailand warranty",
+    "price": 38900,
+    "stockQuantity": 14,
+    "sku": "APPLE-013",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/013.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-27T17:09:00.444Z",
+    "updatedAt": "2025-12-28T17:09:00.444Z"
+  },
+  {
+    "id": "b505f57b-6dfb-4070-8959-c8c7e42bd903",
+    "name": "MacBook Air 15 M3",
+    "description": "MacBook Air 15 M3 original Apple device with official Thailand warranty",
+    "price": 45900,
+    "stockQuantity": 10,
+    "sku": "APPLE-014",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/014.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-28T17:09:00.444Z",
+    "updatedAt": "2025-12-29T17:09:00.444Z"
+  },
+  {
+    "id": "b07c925c-f271-4f10-9abd-83b752cd7a9c",
+    "name": "MacBook Pro 14 M3",
+    "description": "MacBook Pro 14 M3 original Apple device with official Thailand warranty",
+    "price": 62900,
+    "stockQuantity": 9,
+    "sku": "APPLE-015",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/015.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-29T17:09:00.444Z",
+    "updatedAt": "2025-12-30T17:09:00.444Z"
+  },
+  {
+    "id": "5d1e46d2-ee81-43c5-b384-12f5b9b20e89",
+    "name": "MacBook Pro 16 M3 Max",
+    "description": "MacBook Pro 16 M3 Max original Apple device with official Thailand warranty",
+    "price": 119900,
+    "stockQuantity": 6,
+    "sku": "APPLE-016",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/016.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-30T17:09:00.444Z",
+    "updatedAt": "2025-12-31T17:09:00.444Z"
+  },
+  {
+    "id": "9689ab8a-3680-46f3-8c6f-9393e9f9e181",
+    "name": "iMac 24 M3",
+    "description": "iMac 24 M3 original Apple device with official Thailand warranty",
+    "price": 49900,
+    "stockQuantity": 11,
+    "sku": "APPLE-017",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/017.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2025-12-31T17:09:00.444Z",
+    "updatedAt": "2026-01-01T17:09:00.444Z"
+  },
+  {
+    "id": "f5f8a614-2bad-496c-b76b-8da600042552",
+    "name": "Mac mini M2",
+    "description": "Mac mini M2 original Apple device with official Thailand warranty",
+    "price": 20900,
+    "stockQuantity": 13,
+    "sku": "APPLE-018",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/018.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-01-01T17:09:00.444Z",
+    "updatedAt": "2026-01-02T17:09:00.444Z"
+  },
+  {
+    "id": "51a9e8a0-2987-449f-b166-02c1965bce3b",
+    "name": "Mac Studio M2 Max",
+    "description": "Mac Studio M2 Max original Apple device with official Thailand warranty",
+    "price": 74900,
+    "stockQuantity": 5,
+    "sku": "APPLE-019",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/019.jpg"
+    ],
+    "weight": null,
+    "status": "OUT_OF_STOCK",
+    "createdAt": "2026-01-02T17:09:00.444Z",
+    "updatedAt": "2026-01-03T17:09:00.444Z"
+  },
+  {
+    "id": "9c6d0663-583f-46cd-b064-a8d3bf8ebd22",
+    "name": "Mac Pro M2 Ultra",
+    "description": "Mac Pro M2 Ultra original Apple device with official Thailand warranty",
+    "price": 229900,
+    "stockQuantity": 2,
+    "sku": "APPLE-020",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/020.jpg"
+    ],
+    "weight": null,
+    "status": "OUT_OF_STOCK",
+    "createdAt": "2026-01-03T17:09:00.444Z",
+    "updatedAt": "2026-01-04T17:09:00.444Z"
+  },
+  {
+    "id": "4217a451-f7f9-49f6-b8ff-0a97c50b6427",
+    "name": "Apple Watch SE",
+    "description": "Apple Watch SE original Apple device with official Thailand warranty",
+    "price": 9490,
+    "stockQuantity": 30,
+    "sku": "APPLE-021",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/021.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-01-04T17:09:00.444Z",
+    "updatedAt": "2026-01-05T17:09:00.444Z"
+  },
+  {
+    "id": "f8b9a181-755e-40ca-93f8-273685b87c58",
+    "name": "Apple Watch Series 9",
+    "description": "Apple Watch Series 9 original Apple device with official Thailand warranty",
+    "price": 15900,
+    "stockQuantity": 26,
+    "sku": "APPLE-022",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/022.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-01-05T17:09:00.444Z",
+    "updatedAt": "2026-01-06T17:09:00.444Z"
+  },
+  {
+    "id": "5b6f3a3f-9b08-4325-8120-91c7a78f77d9",
+    "name": "Apple Watch Ultra 2",
+    "description": "Apple Watch Ultra 2 original Apple device with official Thailand warranty",
+    "price": 31900,
+    "stockQuantity": 8,
+    "sku": "APPLE-023",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/023.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-01-06T17:09:00.444Z",
+    "updatedAt": "2026-01-07T17:09:00.444Z"
+  },
+  {
+    "id": "1b09b318-887f-4123-a604-bf307d64ff28",
+    "name": "AirPods 2",
+    "description": "AirPods 2 original Apple device with official Thailand warranty",
+    "price": 4990,
+    "stockQuantity": 40,
+    "sku": "APPLE-024",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/024.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-01-07T17:09:00.444Z",
+    "updatedAt": "2026-01-08T17:09:00.444Z"
+  },
+  {
+    "id": "92d861f3-dbbb-4223-98b4-55faa5c1caa4",
+    "name": "AirPods 3",
+    "description": "AirPods 3 original Apple device with official Thailand warranty",
+    "price": 6790,
+    "stockQuantity": 34,
+    "sku": "APPLE-025",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/025.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-01-08T17:09:00.444Z",
+    "updatedAt": "2026-01-09T17:09:00.444Z"
+  },
+  {
+    "id": "c1307160-6c31-4fda-a3cb-781486748e30",
+    "name": "AirPods Pro 2",
+    "description": "AirPods Pro 2 original Apple device with official Thailand warranty",
+    "price": 8990,
+    "stockQuantity": 37,
+    "sku": "APPLE-026",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/026.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-01-09T17:09:00.444Z",
+    "updatedAt": "2026-01-10T17:09:00.444Z"
+  },
+  {
+    "id": "1fc66c29-0cfb-4c55-aeac-1715d4f4cfba",
+    "name": "AirPods Max",
+    "description": "AirPods Max original Apple device with official Thailand warranty",
+    "price": 19900,
+    "stockQuantity": 7,
+    "sku": "APPLE-027",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/027.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-01-10T17:09:00.444Z",
+    "updatedAt": "2026-01-11T17:09:00.444Z"
+  },
+  {
+    "id": "8179c328-e29f-41bd-b320-64e622af1798",
+    "name": "HomePod mini",
+    "description": "HomePod mini original Apple device with official Thailand warranty",
+    "price": 3990,
+    "stockQuantity": 33,
+    "sku": "APPLE-028",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/028.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-01-11T17:09:00.444Z",
+    "updatedAt": "2026-01-12T17:09:00.444Z"
+  },
+  {
+    "id": "1d48500e-b951-44f7-89e3-ee4a27dfaa28",
+    "name": "Apple TV 4K",
+    "description": "Apple TV 4K original Apple device with official Thailand warranty",
+    "price": 5990,
+    "stockQuantity": 21,
+    "sku": "APPLE-029",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/029.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-01-12T17:09:00.444Z",
+    "updatedAt": "2026-01-13T17:09:00.444Z"
+  },
+  {
+    "id": "05541d38-856c-4948-a79b-e47043348ae6",
+    "name": "Magic Keyboard",
+    "description": "Magic Keyboard original Apple device with official Thailand warranty",
+    "price": 3790,
+    "stockQuantity": 24,
+    "sku": "APPLE-030",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/030.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-01-13T17:09:00.444Z",
+    "updatedAt": "2026-01-14T17:09:00.444Z"
+  },
+  {
+    "id": "d1f0cf3a-3fcd-4279-99de-e253f1e22131",
+    "name": "Magic Mouse",
+    "description": "Magic Mouse original Apple device with official Thailand warranty",
+    "price": 2690,
+    "stockQuantity": 29,
+    "sku": "APPLE-031",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/031.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-01-14T17:09:00.444Z",
+    "updatedAt": "2026-01-15T17:09:00.444Z"
+  },
+  {
+    "id": "92d9907a-0629-4fad-be46-7c10c0e2ad64",
+    "name": "Studio Display",
+    "description": "Studio Display original Apple device with official Thailand warranty",
+    "price": 54900,
+    "stockQuantity": 4,
+    "sku": "APPLE-032",
+    "category": "ELECTRONICS",
+    "brand": "Apple",
+    "images": [
+      "https://example.com/apple/032.jpg"
+    ],
+    "weight": null,
+    "status": "OUT_OF_STOCK",
+    "createdAt": "2026-01-15T17:09:00.444Z",
+    "updatedAt": "2026-01-16T17:09:00.444Z"
   }
 ]

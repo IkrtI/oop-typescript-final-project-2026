@@ -1,12 +1,12 @@
 import { expect } from "@jest/globals";
 
-import { writeFileSync } from 'fs';
+import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 /* ------------------------------------------------------------------ */
 /*  Paths                                                              */
 /* ------------------------------------------------------------------ */
-const DATA_DIR = join(process.cwd(), 'data');
+const DATA_DIR = join(process.cwd(), 'test', 'data');
 export const PRODUCTS_FILE = join(DATA_DIR, 'products.json');
 export const ORDERS_FILE = join(DATA_DIR, 'orders.json');
 export const CUSTOMERS_FILE = join(DATA_DIR, 'customers.json');
@@ -17,6 +17,9 @@ export const CUSTOMERS_FILE = join(DATA_DIR, 'customers.json');
 
 /** Overwrite both JSON data files with empty arrays. */
 export function resetDataFiles(): void {
+  process.env.DATA_DIR = DATA_DIR;
+  mkdirSync(DATA_DIR, { recursive: true });
+
   writeFileSync(PRODUCTS_FILE, '[]', 'utf-8');
   writeFileSync(ORDERS_FILE, '[]', 'utf-8');
   writeFileSync(
@@ -102,6 +105,56 @@ export interface CreateOrderPayload {
   note?: string;
 }
 
+export interface ProductResponse {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  stockQuantity: number;
+  sku: string;
+  category: string;
+  brand: string;
+  images: string[];
+  weight: number | null;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CustomerResponse {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  address: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderItemResponse {
+  productId: string;
+  productName: string;
+  priceAtPurchase: number;
+  quantity: number;
+  subtotal: number;
+}
+
+export interface OrderResponse {
+  id: string;
+  customerId: string;
+  items: OrderItemResponse[];
+  totalAmount: number;
+  status: string;
+  paymentMethod: string;
+  shippingAddress: string;
+  trackingNumber: string | null;
+  note: string | null;
+  placedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export function validOrderPayload(
   productId: string,
   quantity = 1,
@@ -124,19 +177,19 @@ export function validOrderPayload(
  * Assert the standard success ApiResponse shape.
  * Returns the `data` property for further assertions.
  */
-export function expectApiSuccess<T = any>(body: any): T {
+export function expectApiSuccess<T = unknown>(body: unknown): T {
   expect(body).toHaveProperty('success', true);
   expect(body).toHaveProperty('message');
-  expect(typeof body.message).toBe('string');
+  expect(typeof (body as { message: unknown }).message).toBe('string');
   expect(body).toHaveProperty('data');
-  return body.data as T;
+  return (body as { data: T }).data;
 }
 
 /**
  * Assert the standard NestJS error response shape.
  */
 export function expectErrorResponse(
-  body: any,
+  body: unknown,
   expectedStatus: number,
 ): void {
   expect(body).toHaveProperty('statusCode', expectedStatus);

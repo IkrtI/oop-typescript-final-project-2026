@@ -10,6 +10,7 @@ import {
   expectApiSuccess,
   expectErrorResponse,
   CreateProductPayload,
+  ProductResponse,
 } from "./utils/e2e-helpers";
 
 describe("Products API (e2e)", () => {
@@ -47,7 +48,7 @@ describe("Products API (e2e)", () => {
         .get("/products")
         .expect(200);
 
-      const data = expectApiSuccess<any[]>(body);
+      const data = expectApiSuccess<ProductResponse[]>(body);
       expect(Array.isArray(data)).toBe(true);
       expect(data).toHaveLength(0);
     });
@@ -83,9 +84,9 @@ describe("Products API (e2e)", () => {
         .get("/products")
         .expect(200);
 
-      const data = expectApiSuccess<any[]>(body);
+      const data = expectApiSuccess<ProductResponse[]>(body);
       expect(data.length).toBeGreaterThanOrEqual(1);
-      expect(data.some((p: any) => p.sku === payload.sku)).toBe(true);
+      expect(data.some((product) => product.sku === payload.sku)).toBe(true);
     });
 
     it("GET /products/:id should return the specific product", async () => {
@@ -237,11 +238,11 @@ describe("Products API (e2e)", () => {
   describe("POST /products — missing required fields", () => {
     it("should reject when name is missing (400)", async () => {
       const payload = validProductPayload();
-      delete (payload as any).name;
+      const { name: _omitName, ...invalidPayload } = payload;
 
       const { body } = await request(app.getHttpServer())
         .post("/products")
-        .send(payload)
+        .send(invalidPayload)
         .expect(400);
 
       expectErrorResponse(body, 400);
@@ -249,11 +250,11 @@ describe("Products API (e2e)", () => {
 
     it("should reject when sku is missing (400)", async () => {
       const payload = validProductPayload();
-      delete (payload as any).sku;
+      const { sku: _omitSku, ...invalidPayload } = payload;
 
       const { body } = await request(app.getHttpServer())
         .post("/products")
-        .send(payload)
+        .send(invalidPayload)
         .expect(400);
 
       expectErrorResponse(body, 400);
@@ -261,11 +262,11 @@ describe("Products API (e2e)", () => {
 
     it("should reject when category is missing (400)", async () => {
       const payload = validProductPayload();
-      delete (payload as any).category;
+      const { category: _omitCategory, ...invalidPayload } = payload;
 
       const { body } = await request(app.getHttpServer())
         .post("/products")
-        .send(payload)
+        .send(invalidPayload)
         .expect(400);
 
       expectErrorResponse(body, 400);
@@ -273,11 +274,11 @@ describe("Products API (e2e)", () => {
 
     it("should reject when brand is missing (400)", async () => {
       const payload = validProductPayload();
-      delete (payload as any).brand;
+      const { brand: _omitBrand, ...invalidPayload } = payload;
 
       const { body } = await request(app.getHttpServer())
         .post("/products")
-        .send(payload)
+        .send(invalidPayload)
         .expect(400);
 
       expectErrorResponse(body, 400);
@@ -285,11 +286,11 @@ describe("Products API (e2e)", () => {
 
     it("should reject when description is missing (400)", async () => {
       const payload = validProductPayload();
-      delete (payload as any).description;
+      const { description: _omitDescription, ...invalidPayload } = payload;
 
       const { body } = await request(app.getHttpServer())
         .post("/products")
-        .send(payload)
+        .send(invalidPayload)
         .expect(400);
 
       expectErrorResponse(body, 400);
@@ -297,11 +298,11 @@ describe("Products API (e2e)", () => {
 
     it("should reject when images is missing (400)", async () => {
       const payload = validProductPayload();
-      delete (payload as any).images;
+      const { images: _omitImages, ...invalidPayload } = payload;
 
       const { body } = await request(app.getHttpServer())
         .post("/products")
-        .send(payload)
+        .send(invalidPayload)
         .expect(400);
 
       expectErrorResponse(body, 400);
@@ -381,8 +382,10 @@ describe("Products API (e2e)", () => {
 
   describe("POST /products — string for numeric field", () => {
     it("should reject string for price (400)", async () => {
-      const payload: any = validProductPayload();
-      payload.price = "not-a-number";
+      const payload = {
+        ...validProductPayload(),
+        price: "not-a-number",
+      };
 
       const { body } = await request(app.getHttpServer())
         .post("/products")
@@ -393,8 +396,10 @@ describe("Products API (e2e)", () => {
     });
 
     it("should reject string for stockQuantity (400)", async () => {
-      const payload: any = validProductPayload();
-      payload.stockQuantity = "abc";
+      const payload = {
+        ...validProductPayload(),
+        stockQuantity: "abc",
+      };
 
       const { body } = await request(app.getHttpServer())
         .post("/products")
@@ -548,7 +553,7 @@ describe("Products API (e2e)", () => {
 
   describe("POST /products — forbid non-whitelisted fields", () => {
     it("should strip or reject unknown fields", async () => {
-      const payload: any = validProductPayload();
+      const payload: CreateProductPayload & { unknownField?: string } = validProductPayload();
       payload.unknownField = "should be rejected";
 
       const { body } = await request(app.getHttpServer())

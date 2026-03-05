@@ -9,6 +9,7 @@ import {
   resetDataFiles,
   validProductPayload,
   validOrderPayload,
+  CustomerResponse,
 } from './utils/e2e-helpers';
 
 describe('Customers API (e2e)', () => {
@@ -37,7 +38,7 @@ describe('Customers API (e2e)', () => {
 
   it('GET /customer should return seeded customers', async () => {
     const { body } = await request(app.getHttpServer()).get('/customer').expect(200);
-    const data = expectApiSuccess<any[]>(body);
+    const data = expectApiSuccess<CustomerResponse[]>(body);
     expect(data.length).toBeGreaterThanOrEqual(2);
   });
 
@@ -100,7 +101,7 @@ describe('Customers API (e2e)', () => {
       .get(`/products/${productResponse.body.data.id}/customers`)
       .expect(200);
 
-    const data = expectApiSuccess<any[]>(body);
+    const data = expectApiSuccess<Array<{ customerId: string }>>(body);
     expect(data.length).toBeGreaterThan(0);
     expect(data[0].customerId).toBeDefined();
   });

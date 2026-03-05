@@ -22,8 +22,9 @@ import process from "node:process";
 @Injectable()
 export class ProductsRepository extends JsonFileRepository<Product> {
   constructor() {
+    const dataDir = process.env.DATA_DIR ?? join(process.cwd(), "data");
     // super() เรียก constructor ของ class แม่ (JsonFileRepository)
     // ส่ง path ไปยังไฟล์ JSON ที่เก็บข้อมูลสินค้า
-    super(join(process.cwd(), "data", "products.json"));
+    super(join(dataDir, "products.json"));
   }
 }

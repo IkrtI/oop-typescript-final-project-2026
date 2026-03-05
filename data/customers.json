@@ -1,32 +1,122 @@
 [
   {
-    "id": "CUST-E2E-001",
-    "fullName": "Demo Customer",
-    "email": "cust-e2e-001@example.com",
-    "phone": "0800000001",
-    "address": "123 Test Street, Test City 10000",
+    "id": "CUST-APL-001",
+    "fullName": "Somchai Applefan",
+    "email": "somchai.applefan@example.com",
+    "phone": "0810000000",
+    "address": "10 Apple Avenue, Bangkok 10100",
     "status": "ACTIVE",
-    "createdAt": "2026-03-04T13:38:39.928Z",
-    "updatedAt": "2026-03-04T13:38:39.928Z"
+    "createdAt": "2025-11-05T17:09:00.444Z",
+    "updatedAt": "2025-11-07T17:09:00.444Z"
   },
   {
-    "id": "CUST-MULTI",
-    "fullName": "Multi Buyer",
-    "email": "cust-multi@example.com",
-    "phone": "0800000002",
-    "address": "456 Multi Street",
+    "id": "CUST-APL-002",
+    "fullName": "Arisa Tech",
+    "email": "arisa.tech@example.com",
+    "phone": "0810013791",
+    "address": "11 Apple Avenue, Bangkok 10101",
     "status": "ACTIVE",
-    "createdAt": "2026-03-04T13:38:39.928Z",
-    "updatedAt": "2026-03-04T13:38:39.928Z"
+    "createdAt": "2025-11-08T17:09:00.444Z",
+    "updatedAt": "2025-11-10T17:09:00.444Z"
   },
   {
-    "id": "a0d58473-62b8-4c99-a8b6-5e2d4d24a6ae",
-    "fullName": "Jane Test",
-    "email": "jane@test.com",
-    "phone": "0899999999",
-    "address": "Bangkok, Thailand",
+    "id": "CUST-APL-003",
+    "fullName": "Narin Pro",
+    "email": "narin.pro@example.com",
+    "phone": "0810027582",
+    "address": "12 Apple Avenue, Bangkok 10102",
     "status": "ACTIVE",
-    "createdAt": "2026-03-04T13:38:39.949Z",
-    "updatedAt": "2026-03-04T13:38:39.949Z"
+    "createdAt": "2025-11-11T17:09:00.444Z",
+    "updatedAt": "2025-11-13T17:09:00.444Z"
+  },
+  {
+    "id": "CUST-APL-004",
+    "fullName": "Kanya Device",
+    "email": "kanya.device@example.com",
+    "phone": "0810041373",
+    "address": "13 Apple Avenue, Bangkok 10103",
+    "status": "ACTIVE",
+    "createdAt": "2025-11-14T17:09:00.444Z",
+    "updatedAt": "2025-11-16T17:09:00.444Z"
+  },
+  {
+    "id": "CUST-APL-005",
+    "fullName": "Preecha Studio",
+    "email": "preecha.studio@example.com",
+    "phone": "0810055164",
+    "address": "14 Apple Avenue, Bangkok 10104",
+    "status": "ACTIVE",
+    "createdAt": "2025-11-17T17:09:00.444Z",
+    "updatedAt": "2025-11-19T17:09:00.444Z"
+  },
+  {
+    "id": "CUST-APL-006",
+    "fullName": "Mali Creator",
+    "email": "mali.creator@example.com",
+    "phone": "0810068955",
+    "address": "15 Apple Avenue, Bangkok 10105",
+    "status": "ACTIVE",
+    "createdAt": "2025-11-20T17:09:00.444Z",
+    "updatedAt": "2025-11-22T17:09:00.444Z"
+  },
+  {
+    "id": "CUST-APL-007",
+    "fullName": "Thanawat Office",
+    "email": "thanawat.office@example.com",
+    "phone": "0810082746",
+    "address": "16 Apple Avenue, Bangkok 10106",
+    "status": "ACTIVE",
+    "createdAt": "2025-11-23T17:09:00.444Z",
+    "updatedAt": "2025-11-25T17:09:00.444Z"
+  },
+  {
+    "id": "CUST-APL-008",
+    "fullName": "Suda Mobile",
+    "email": "suda.mobile@example.com",
+    "phone": "0810096537",
+    "address": "17 Apple Avenue, Bangkok 10107",
+    "status": "ACTIVE",
+    "createdAt": "2025-11-26T17:09:00.444Z",
+    "updatedAt": "2025-11-28T17:09:00.444Z"
+  },
+  {
+    "id": "CUST-APL-009",
+    "fullName": "Anan Premium",
+    "email": "anan.premium@example.com",
+    "phone": "0810110328",
+    "address": "18 Apple Avenue, Bangkok 10108",
+    "status": "ACTIVE",
+    "createdAt": "2025-11-29T17:09:00.444Z",
+    "updatedAt": "2025-12-01T17:09:00.444Z"
+  },
+  {
+    "id": "CUST-APL-010",
+    "fullName": "Nicha Education",
+    "email": "nicha.education@example.com",
+    "phone": "0810124119",
+    "address": "19 Apple Avenue, Bangkok 10109",
+    "status": "ACTIVE",
+    "createdAt": "2025-12-02T17:09:00.444Z",
+    "updatedAt": "2025-12-04T17:09:00.444Z"
+  },
+  {
+    "id": "CUST-APL-011",
+    "fullName": "Phuri Developer",
+    "email": "phuri.dev@example.com",
+    "phone": "0810137910",
+    "address": "20 Apple Avenue, Bangkok 10110",
+    "status": "INACTIVE",
+    "createdAt": "2025-12-05T17:09:00.444Z",
+    "updatedAt": "2025-12-07T17:09:00.444Z"
+  },
+  {
+    "id": "CUST-APL-012",
+    "fullName": "Dao Business",
+    "email": "dao.business@example.com",
+    "phone": "0810151701",
+    "address": "21 Apple Avenue, Bangkok 10111",
+    "status": "ACTIVE",
+    "createdAt": "2025-12-08T17:09:00.444Z",
+    "updatedAt": "2025-12-10T17:09:00.444Z"
   }
 ]

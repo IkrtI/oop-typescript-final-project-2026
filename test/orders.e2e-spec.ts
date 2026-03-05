@@ -10,6 +10,8 @@ import {
   uniqueSku,
   expectApiSuccess,
   expectErrorResponse,
+  ProductResponse,
+  OrderResponse,
 } from './utils/e2e-helpers';
 
 describe('Orders API (e2e)', () => {
@@ -43,7 +45,7 @@ describe('Orders API (e2e)', () => {
   async function seedProduct(
     stock = 50,
     price = 100,
-    overrides: Record<string, any> = {},
+    overrides: Record<string, unknown> = {},
   ): Promise<{ id: string; sku: string; price: number; stockQuantity: number }> {
     const payload = validProductPayload({
       stockQuantity: stock,
@@ -58,7 +60,7 @@ describe('Orders API (e2e)', () => {
   }
 
   /** Fetch product by id via API */
-  async function getProduct(id: string): Promise<any> {
+  async function getProduct(id: string): Promise<ProductResponse> {
     const { body } = await request(app.getHttpServer())
       .get(`/products/${id}`)
       .expect(200);
@@ -70,7 +72,7 @@ describe('Orders API (e2e)', () => {
    * ================================================================ */
 
   describe('POST /orders — create order (happy path)', () => {
-    let product: any;
+    let product: { id: string; sku: string; price: number; stockQuantity: number };
     let orderId: string;
 
     beforeAll(async () => {
@@ -113,8 +115,8 @@ describe('Orders API (e2e)', () => {
         .get('/orders')
         .expect(200);
 
-      const data = expectApiSuccess<any[]>(body);
-      expect(data.some((o: any) => o.id === orderId)).toBe(true);
+      const data = expectApiSuccess<OrderResponse[]>(body);
+      expect(data.some((order) => order.id === orderId)).toBe(true);
     });
 
     it('GET /orders/:id should return the order', async () => {
@@ -427,12 +429,12 @@ describe('Orders API (e2e)', () => {
   describe('POST /orders — missing required fields', () => {
     it('should reject when customerId is missing (400)', async () => {
       const product = await seedProduct(5, 50);
-      const payload: any = validOrderPayload(product.id, 1);
-      delete payload.customerId;
+      const payload = validOrderPayload(product.id, 1);
+      const { customerId: _omitCustomerId, ...invalidPayload } = payload;
 
       const { body } = await request(app.getHttpServer())
         .post('/orders')
-        .send(payload)
+        .send(invalidPayload)
         .expect(400);
 
       expectErrorResponse(body, 400);
@@ -440,12 +442,12 @@ describe('Orders API (e2e)', () => {
 
     it('should reject when shippingAddress is missing (400)', async () => {
       const product = await seedProduct(5, 50);
-      const payload: any = validOrderPayload(product.id, 1);
-      delete payload.shippingAddress;
+      const payload = validOrderPayload(product.id, 1);
+      const { shippingAddress: _omitShippingAddress, ...invalidPayload } = payload;
 
       const { body } = await request(app.getHttpServer())
         .post('/orders')
-        .send(payload)
+        .send(invalidPayload)
         .expect(400);
 
       expectErrorResponse(body, 400);
@@ -453,12 +455,12 @@ describe('Orders API (e2e)', () => {
 
     it('should reject when paymentMethod is missing (400)', async () => {
       const product = await seedProduct(5, 50);
-      const payload: any = validOrderPayload(product.id, 1);
-      delete payload.paymentMethod;
+      const payload = validOrderPayload(product.id, 1);
+      const { paymentMethod: _omitPaymentMethod, ...invalidPayload } = payload;
 
       const { body } = await request(app.getHttpServer())
         .post('/orders')
-        .send(payload)
+        .send(invalidPayload)
         .expect(400);
 
       expectErrorResponse(body, 400);
@@ -762,8 +764,10 @@ describe('Orders API (e2e)', () => {
   describe('POST /orders — forbid non-whitelisted fields', () => {
     it('should reject unknown fields', async () => {
       const product = await seedProduct(5, 50);
-      const payload: any = validOrderPayload(product.id, 1);
-      payload.unknownField = 'hacker';
+      const payload = {
+        ...validOrderPayload(product.id, 1),
+        unknownField: 'hacker',
+      };
 
       const { body } = await request(app.getHttpServer())
         .post('/orders')

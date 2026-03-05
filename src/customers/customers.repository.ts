@@ -7,6 +7,7 @@ import { Customer } from "./entities/customer.entity";
 @Injectable()
 export class CustomersRepository extends JsonFileRepository<Customer> {
   constructor() {
-    super(join(process.cwd(), "data", "customers.json"));
+    const dataDir = process.env.DATA_DIR ?? join(process.cwd(), "data");
+    super(join(dataDir, "customers.json"));
   }
 }

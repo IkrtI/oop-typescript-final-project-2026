@@ -1,0 +1,32 @@
+[
+  {
+    "id": "CUST-E2E-001",
+    "fullName": "Demo Customer",
+    "email": "cust-e2e-001@example.com",
+    "phone": "0800000001",
+    "address": "123 Test Street, Test City 10000",
+    "status": "ACTIVE",
+    "createdAt": "2026-03-05T17:17:18.141Z",
+    "updatedAt": "2026-03-05T17:17:18.141Z"
+  },
+  {
+    "id": "CUST-MULTI",
+    "fullName": "Multi Buyer",
+    "email": "cust-multi@example.com",
+    "phone": "0800000002",
+    "address": "456 Multi Street",
+    "status": "ACTIVE",
+    "createdAt": "2026-03-05T17:17:18.141Z",
+    "updatedAt": "2026-03-05T17:17:18.141Z"
+  },
+  {
+    "id": "e945fbbc-dc8b-4cd5-b201-3c30c63eee4a",
+    "fullName": "Jane Test",
+    "email": "jane@test.com",
+    "phone": "0899999999",
+    "address": "Bangkok, Thailand",
+    "status": "ACTIVE",
+    "createdAt": "2026-03-05T17:17:18.179Z",
+    "updatedAt": "2026-03-05T17:17:18.179Z"
+  }
+]
