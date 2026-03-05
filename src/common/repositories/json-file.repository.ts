@@ -34,6 +34,8 @@ import { BaseEntity } from "../entities/base.entity";
  * (ต้องมี id, createdAt, updatedAt)
  */
 export class JsonFileRepository<T extends BaseEntity> {
+  private readonly isReadOnlyRuntime = process.env.VERCEL === "1";
+
   /**
    * 📘 OOP Concept: Encapsulation (การห่อหุ้ม)
    * ─────────────────────────────────────────────
@@ -105,6 +107,12 @@ export class JsonFileRepository<T extends BaseEntity> {
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง แทนที่ throw ⬇️
   private async saveToFile(): Promise<void> {
+    if (this.isReadOnlyRuntime) {
+      // Vercel Serverless runtime has a read-only deployment filesystem.
+      // Keep data in memory for the current warm instance.
+      return;
+    }
+
     // สร้างชื่อไฟล์ชั่วคราว เช่น "data/products.json.tmp"
     const tmpPath = this.filePath + ".tmp";
 

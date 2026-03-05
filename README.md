@@ -113,6 +113,47 @@ frontend/index.html
 * แก้สถานะ order และ tracking number
 * ดู insights เช่น top buyers และ top products
 
+### 4.1 Open Dashboard Through Nest Route
+
+เมื่อรัน backend แล้วสามารถเข้า dashboard ผ่าน route นี้ได้ด้วย:
+
+```text
+http://localhost:3000/app
+```
+
+### 4.2 Deploy to Vercel (Serverless)
+
+โปรเจคนี้เตรียม `vercel.json` และ `serverless.ts` แล้วเพื่อ deploy แบบ Serverless บน Vercel:
+
+1. ติดตั้ง Vercel CLI (ถ้ายังไม่มี)
+
+```bash
+npm i -g vercel
+```
+
+2. Deploy จาก root ของโปรเจค
+
+```bash
+vercel
+```
+
+3. Production deploy
+
+```bash
+vercel --prod
+```
+
+พฤติกรรมหลัง deploy:
+
+* `/app` และ `/app/*` ถูกเสิร์ฟเป็น static frontend (เร็วกว่าเสิร์ฟผ่าน function)
+* เส้น API ทั้งหมดถูกส่งเข้า NestJS Serverless handler
+
+ข้อควรทราบสำคัญสำหรับ Vercel Serverless:
+
+* ระบบไฟล์ของ deployment เป็น read-only
+* ข้อมูลที่แก้ไขผ่าน CRUD จะคงอยู่เฉพาะ in-memory ของ instance ที่ยัง warm อยู่ (ไม่ถาวร)
+* หากต้องการ persistence จริง ควรย้าย repository จาก JSON file ไปใช้ Database (เช่น Neon/PostgreSQL, Supabase, MongoDB Atlas)
+
 ### 5. New Customer APIs
 
 เพิ่ม REST APIs สำหรับ `customer` และความสัมพันธ์ข้าม model:
