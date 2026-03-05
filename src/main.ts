@@ -3,12 +3,25 @@ import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { join } from "path";
+import { existsSync } from "fs";
 import { Request, Response } from "express";
 import { AppModule } from "./app.module";
 
+function resolveFrontendPath(): string {
+  const candidates = [
+    join(process.cwd(), "frontend"),
+    join(__dirname, "..", "frontend"),
+  ];
+
+  return (
+    candidates.find((candidate) => existsSync(join(candidate, "index.html"))) ??
+    candidates[0]
+  );
+}
+
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  const frontendPath = join(__dirname, "..", "frontend");
+  const frontendPath = resolveFrontendPath();
 
   // Serve frontend files from /frontend via /app.
   app.useStaticAssets(frontendPath, {
