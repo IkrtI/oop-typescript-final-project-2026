@@ -3,12 +3,23 @@ import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { Request, Response } from "express";
+import { existsSync } from "fs";
 import { join } from "path";
 import { AppModule } from "../app.module";
 
+function resolveFrontendPath(): string {
+  const candidates = [
+    join(process.cwd(), "frontend"),
+    join(__dirname, "..", "..", "frontend"),
+    join(__dirname, "..", "..", "..", "frontend"),
+  ];
+
+  return candidates.find((path) => existsSync(join(path, "index.html"))) ?? candidates[0];
+}
+
 export async function createConfiguredApp(): Promise<NestExpressApplication> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  const frontendPath = join(process.cwd(), "frontend");
+  const frontendPath = resolveFrontendPath();
 
   app.useStaticAssets(frontendPath, {
     prefix: "/app/",

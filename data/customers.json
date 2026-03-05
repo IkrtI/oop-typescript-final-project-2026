@@ -6,8 +6,8 @@
     "phone": "0800000001",
     "address": "123 Test Street, Test City 10000",
     "status": "ACTIVE",
-    "createdAt": "2026-03-05T14:58:55.319Z",
-    "updatedAt": "2026-03-05T14:58:55.319Z"
+    "createdAt": "2026-03-05T15:14:44.057Z",
+    "updatedAt": "2026-03-05T15:14:44.057Z"
   },
   {
     "id": "CUST-MULTI",
@@ -16,17 +16,7 @@
     "phone": "0800000002",
     "address": "456 Multi Street",
     "status": "ACTIVE",
-    "createdAt": "2026-03-05T14:58:55.319Z",
-    "updatedAt": "2026-03-05T14:58:55.319Z"
-  },
-  {
-    "id": "94f6420d-cdba-4915-abb2-28effb8b834a",
-    "fullName": "Jane Test",
-    "email": "jane@test.com",
-    "phone": "0899999999",
-    "address": "Bangkok, Thailand",
-    "status": "ACTIVE",
-    "createdAt": "2026-03-05T14:58:55.378Z",
-    "updatedAt": "2026-03-05T14:58:55.378Z"
+    "createdAt": "2026-03-05T15:14:44.057Z",
+    "updatedAt": "2026-03-05T15:14:44.057Z"
   }
 ]

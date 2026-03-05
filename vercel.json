@@ -3,18 +3,17 @@
   "builds": [
     {
       "src": "serverless.ts",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "frontend/**",
+          "data/**",
+          "node_modules/swagger-ui-dist/**"
+        ]
+      }
     }
   ],
   "routes": [
-    {
-      "src": "/app$",
-      "dest": "/frontend/index.html"
-    },
-    {
-      "src": "/app/(.*)",
-      "dest": "/frontend/$1"
-    },
     {
       "src": "/(.*)",
       "dest": "/serverless.ts"

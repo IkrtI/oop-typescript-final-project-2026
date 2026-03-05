@@ -1,11 +1,11 @@
 [
   {
-    "id": "db35ba03-74d8-4968-8774-895f55ee39b7",
+    "id": "5500b196-0315-4500-b592-083d901716b1",
     "name": "Test Product",
     "description": "A product created by E2E tests",
     "price": 199.99,
-    "stockQuantity": 49,
-    "sku": "TEST-1772722735385-1",
+    "stockQuantity": 50,
+    "sku": "TEST-1772723684053-1",
     "category": "ELECTRONICS",
     "brand": "TestBrand",
     "images": [
@@ -13,16 +13,50 @@
     ],
     "weight": null,
     "status": "ACTIVE",
-    "createdAt": "2026-03-05T14:58:55.393Z",
-    "updatedAt": "2026-03-05T14:58:55.396Z"
+    "createdAt": "2026-03-05T15:14:44.092Z",
+    "updatedAt": "2026-03-05T15:14:44.092Z"
   },
   {
-    "id": "20ec30a8-d553-4dd7-8dd1-372c986e9ff7",
+    "id": "85203452-fec7-4142-833e-0ff43af44d64",
+    "name": "Updated Product Name",
+    "description": "Updated description",
+    "price": 999.99,
+    "stockQuantity": 10,
+    "sku": "PUT-1772723684099-3",
+    "category": "CLOTHING",
+    "brand": "UpdatedBrand",
+    "images": [
+      "https://example.com/updated.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-03-05T15:14:44.101Z",
+    "updatedAt": "2026-03-05T15:14:44.104Z"
+  },
+  {
+    "id": "4eb820dd-96a3-444d-b667-0d0d16a16a31",
+    "name": "Test Product",
+    "description": "A product created by E2E tests",
+    "price": 250,
+    "stockQuantity": 99,
+    "sku": "TEST-1772723684107-5",
+    "category": "ELECTRONICS",
+    "brand": "TestBrand",
+    "images": [
+      "https://example.com/img.jpg"
+    ],
+    "weight": null,
+    "status": "DISCONTINUED",
+    "createdAt": "2026-03-05T15:14:44.108Z",
+    "updatedAt": "2026-03-05T15:14:44.115Z"
+  },
+  {
+    "id": "fd9c9930-18d9-4da2-8846-882c3523c593",
     "name": "Test Product",
     "description": "A product created by E2E tests",
     "price": 199.99,
-    "stockQuantity": 48,
-    "sku": "SKU-1772722735409",
+    "stockQuantity": 50,
+    "sku": "DUP-1772723684054-2",
     "category": "ELECTRONICS",
     "brand": "TestBrand",
     "images": [
@@ -30,7 +64,92 @@
     ],
     "weight": null,
     "status": "ACTIVE",
-    "createdAt": "2026-03-05T14:58:55.412Z",
-    "updatedAt": "2026-03-05T14:58:55.414Z"
+    "createdAt": "2026-03-05T15:14:44.124Z",
+    "updatedAt": "2026-03-05T15:14:44.124Z"
+  },
+  {
+    "id": "d21e3833-c75d-476d-8012-a135a5bff347",
+    "name": "Test Product",
+    "description": "A product created by E2E tests",
+    "price": 199.99,
+    "stockQuantity": 50,
+    "sku": "TEST-1772723684179-25",
+    "category": "ELECTRONICS",
+    "brand": "TestBrand",
+    "images": [
+      "https://example.com/img.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-03-05T15:14:44.180Z",
+    "updatedAt": "2026-03-05T15:14:44.180Z"
+  },
+  {
+    "id": "9ebd71fd-2d90-4a53-a8d7-94d073032bc7",
+    "name": "Test Product",
+    "description": "A product created by E2E tests",
+    "price": 199.99,
+    "stockQuantity": 50,
+    "sku": "TEST-1772723684185-26",
+    "category": "ELECTRONICS",
+    "brand": "TestBrand",
+    "images": [
+      "https://example.com/img.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-03-05T15:14:44.186Z",
+    "updatedAt": "2026-03-05T15:14:44.186Z"
+  },
+  {
+    "id": "851c3499-b5ad-4acc-8807-a518baf0d038",
+    "name": "Test Product",
+    "description": "A product created by E2E tests",
+    "price": 199.99,
+    "stockQuantity": 50,
+    "sku": "SKU-B-1772723684188-27",
+    "category": "ELECTRONICS",
+    "brand": "TestBrand",
+    "images": [
+      "https://example.com/img.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-03-05T15:14:44.189Z",
+    "updatedAt": "2026-03-05T15:14:44.189Z"
+  },
+  {
+    "id": "4fae539a-690a-4b46-9b37-c678d719cca2",
+    "name": "Test Product",
+    "description": "A product created by E2E tests",
+    "price": 199.99,
+    "stockQuantity": 50,
+    "sku": "TEST-1772723684192-30",
+    "category": "ELECTRONICS",
+    "brand": "TestBrand",
+    "images": [
+      "https://example.com/img.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-03-05T15:14:44.192Z",
+    "updatedAt": "2026-03-05T15:14:44.192Z"
+  },
+  {
+    "id": "7aa7e7ca-546f-4113-a54c-a2e9b15517d4",
+    "name": "Test Product",
+    "description": "A product created by E2E tests",
+    "price": 199.99,
+    "stockQuantity": 50,
+    "sku": "SKU-D-1772723684193-31",
+    "category": "ELECTRONICS",
+    "brand": "TestBrand",
+    "images": [
+      "https://example.com/img.jpg"
+    ],
+    "weight": null,
+    "status": "ACTIVE",
+    "createdAt": "2026-03-05T15:14:44.194Z",
+    "updatedAt": "2026-03-05T15:14:44.194Z"
   }
 ]
