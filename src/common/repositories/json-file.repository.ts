@@ -104,18 +104,24 @@ export class JsonFileRepository<T extends BaseEntity> {
   //   - rename(oldPath, newPath) → เปลี่ยนชื่อไฟล์
   //
   // ⬇️ เขียนโค้ดของคุณด้านล่าง แทนที่ throw ⬇️
+  private writeQueue: Promise<void> = Promise.resolve();
+
   private async saveToFile(): Promise<void> {
-    // สร้างชื่อไฟล์ชั่วคราว เช่น "data/products.json.tmp"
-    const tmpPath = this.filePath + ".tmp";
+    // ต่อคิว: รอ write ก่อนหน้าเสร็จก่อนเสมอ (ป้องกัน concurrent write race condition)
+    this.writeQueue = this.writeQueue.then(async () => {
+      // สร้างชื่อไฟล์ชั่วคราว เช่น "data/products.json.tmp"
+      const tmpPath = this.filePath + ".tmp";
 
-    // แปลง array ใน memory → JSON string (pretty-print 2 spaces)
-    const jsonString = JSON.stringify(this.data, null, 2);
+      // แปลง array ใน memory → JSON string (pretty-print 2 spaces)
+      const jsonString = JSON.stringify(this.data, null, 2);
 
-    // เขียนลงไฟล์ชั่วคราวก่อน
-    await writeFile(tmpPath, jsonString, "utf-8");
+      // เขียนลงไฟล์ชั่วคราวก่อน
+      await writeFile(tmpPath, jsonString, "utf-8");
 
-    // rename เป็น atomic operation → ถ้าเครื่องดับกลางทาง ไฟล์จริงไม่เสียหาย
-    await rename(tmpPath, this.filePath);
+      // rename เป็น atomic operation → ถ้าเครื่องดับกลางทาง ไฟล์จริงไม่เสียหาย
+      await rename(tmpPath, this.filePath);
+    });
+    await this.writeQueue;
   }
 
   /**
