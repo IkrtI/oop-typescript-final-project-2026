@@ -41,6 +41,10 @@ const els = {
   loadingOverlay: document.getElementById("loadingOverlay"),
   loadingText: document.getElementById("loadingText"),
   resetDataBtn: document.getElementById("resetDataBtn"),
+
+  searchOrders: document.getElementById("searchOrders"),
+  searchCustomers: document.getElementById("searchCustomers"),
+  searchProducts: document.getElementById("searchProducts"),
 };
 
 /* ── Tab navigation ── */
@@ -71,6 +75,77 @@ function esc(value) {
     .replace(/>/g, "&gt;")
     .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function getApiBase() {
+  return window.location.origin;
+}
+
+function generateCliCommands(method, path, payload) {
+  const base = getApiBase();
+  const url = `${base}${path}`;
+  const hasBody = payload && (method === 'POST' || method === 'PUT' || method === 'PATCH');
+  const payloadInline = hasBody ? JSON.stringify(payload) : '';
+  const payloadPretty = hasBody ? JSON.stringify(payload, null, 2) : '';
+
+  let curl, node, wget;
+
+  if (hasBody) {
+    curl = `curl -X ${method} '${url}' \\\n  -H 'Content-Type: application/json' \\\n  -d '${payloadInline}'`;
+    node = `const response = await fetch('${url}', {\n  method: '${method}',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify(${payloadPretty})\n});\nconst data = await response.json();\nconsole.log(data);`;
+    wget = `wget -qO- \\\n  --method=${method} \\\n  --body-data='${payloadInline}' \\\n  --header='Content-Type: application/json' \\\n  '${url}'`;
+  } else {
+    curl = `curl -X ${method} '${url}'`;
+    node = `const response = await fetch('${url}', {\n  method: '${method}'\n});\nconst data = await response.json();\nconsole.log(data);`;
+    wget = `wget -qO- --method=${method} '${url}'`;
+  }
+
+  return { curl, node, wget };
+}
+
+function openCliModal(title, method, path, payload) {
+  const cmds = generateCliCommands(method, path, payload);
+  const activeTab = 'rounded-md bg-stone-800 px-3 py-1 text-xs font-semibold text-white';
+  const inactiveTab = 'rounded-md border border-stone-300 px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50';
+
+  openModal(
+    `CLI: ${title}`,
+    `<div class="grid gap-3">
+      <div class="flex items-center gap-2 text-xs text-stone-500">
+        <span class="rounded-full border border-teal-200 bg-teal-50 px-2 py-0.5 font-semibold text-teal-700">${method}</span>
+        <code class="break-all">${esc(path)}</code>
+      </div>
+      <div class="mb-1 flex gap-1 flex-wrap">
+        <button id="cliTabCurl" class="${activeTab}">curl</button>
+        <button id="cliTabNode" class="${inactiveTab}">Node.js</button>
+        <button id="cliTabWget" class="${inactiveTab}">wget</button>
+      </div>
+      <div class="relative">
+        <pre id="cliModalOutput" class="max-h-56 overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-stone-900 p-3 text-xs text-green-400">${esc(cmds.curl)}</pre>
+        <button id="cliModalCopyBtn" class="absolute right-2 top-2 rounded border border-stone-600 bg-stone-700 px-2 py-1 text-[10px] text-stone-300 transition hover:bg-stone-600">Copy</button>
+      </div>
+    </div>`,
+  );
+
+  const tabCurl = document.getElementById('cliTabCurl');
+  const tabNode = document.getElementById('cliTabNode');
+  const tabWget = document.getElementById('cliTabWget');
+  const output = document.getElementById('cliModalOutput');
+  const allTabs = [tabCurl, tabNode, tabWget];
+
+  function setTab(active, cmd) {
+    allTabs.forEach((t) => (t.className = inactiveTab));
+    active.className = activeTab;
+    output.textContent = cmd;
+  }
+
+  tabCurl.addEventListener('click', () => setTab(tabCurl, cmds.curl));
+  tabNode.addEventListener('click', () => setTab(tabNode, cmds.node));
+  tabWget.addEventListener('click', () => setTab(tabWget, cmds.wget));
+
+  document.getElementById('cliModalCopyBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(output.textContent).then(() => showToast('คัดลอกแล้ว'));
+  });
 }
 
 async function api(path, options = {}) {
@@ -307,9 +382,31 @@ function renderSelects() {
 }
 
 function renderOrdersList() {
-  const sorted = [...state.orders].sort((a, b) => b.placedAt.localeCompare(a.placedAt));
+  const q = (els.searchOrders.value || "").toLowerCase().trim();
 
-  els.ordersList.innerHTML = sorted
+  const filtered = [...state.orders]
+    .sort((a, b) => b.placedAt.localeCompare(a.placedAt))
+    .filter((order) => {
+      if (!q) return true;
+      const cName = customerName(order.customerId).toLowerCase();
+      const hasProductMatch = (order.items || []).some((item) =>
+        (item.productName || "").toLowerCase().includes(q)
+      );
+      return (
+        order.id.toLowerCase().includes(q) ||
+        cName.includes(q) ||
+        order.status.toLowerCase().includes(q) ||
+        order.paymentMethod.toLowerCase().includes(q) ||
+        hasProductMatch
+      );
+    });
+
+  if (!filtered.length) {
+    els.ordersList.innerHTML = `<p class="py-6 text-center text-sm text-stone-400">${q ? `ไม่พบรายการที่ตรงกับ "${esc(q)}"` : "ยังไม่มีคำสั่งซื้อ"}</p>`;
+    return;
+  }
+
+  els.ordersList.innerHTML = filtered
     .map((order) => {
       const itemsHTML = order.items
         .map(
@@ -328,16 +425,20 @@ function renderOrdersList() {
       return `
       <article class="rounded-lg border border-stone-200 bg-stone-50 p-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <h4 class="heading-font text-sm font-semibold text-stone-800">${order.id.slice(0, 8)} • ${esc(customerName(order.customerId))}</h4>
-          <span class="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700">${order.totalAmount.toLocaleString()} THB</span>
+          <button data-order-detail="${order.id}" class="heading-font text-left text-sm font-semibold text-stone-800 transition hover:text-teal-700">${order.id.slice(0, 8)} • ${esc(customerName(order.customerId))}</button>
+          <div class="flex items-center gap-1.5">
+            <span class="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700">${order.totalAmount.toLocaleString()} THB</span>
+            <button data-order-detail="${order.id}" class="rounded-md border border-stone-200 bg-white px-2 py-1 text-[11px] font-semibold text-stone-500 transition hover:bg-stone-100">รายละเอียด</button>
+          </div>
         </div>
         <p class="mt-1 text-xs text-stone-400">${new Date(order.placedAt).toLocaleString()}</p>
         <ul class="mt-2 grid gap-0.5">${itemsHTML}</ul>
 
-        <div class="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+        <div class="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto_auto]">
           <select data-order-status="${order.id}" class="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-xs text-stone-700">${statusOptions}</select>
           <input data-order-tracking="${order.id}" value="${esc(order.trackingNumber || "")}" placeholder="tracking number" class="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-xs text-stone-700" />
           <button data-order-update="${order.id}" class="rounded-lg bg-teal-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-teal-800">Update</button>
+          <button data-order-cli="${order.id}" class="rounded-lg border border-stone-300 bg-stone-50 px-2 py-1.5 text-[11px] font-semibold text-stone-500 transition hover:bg-stone-100" title="CLI">&lt;/&gt;</button>
         </div>
       </article>`;
     })
@@ -345,10 +446,21 @@ function renderOrdersList() {
 }
 
 function renderCustomersTable() {
+  const q = (els.searchCustomers.value || "").toLowerCase().trim();
+  const filtered = state.customers.filter((c) => {
+    if (!q) return true;
+    return (
+      c.fullName.toLowerCase().includes(q) ||
+      c.email.toLowerCase().includes(q) ||
+      (c.phone || "").toLowerCase().includes(q)
+    );
+  });
+
   const salesMap = buildCustomerSalesMap();
+  const emptyMsg = q ? `ไม่พบลูกค้าที่ตรงกับ "${esc(q)}"` : "No customers";
 
   if (isMobileView()) {
-    const cards = state.customers
+    const cards = filtered
       .map((customer) => {
         const info = salesMap.get(customer.id) || { orderCount: 0, totalSpent: 0 };
         return `
@@ -365,13 +477,13 @@ function renderCustomersTable() {
 
     els.customersTable.innerHTML = `
       <div class="grid gap-2 p-2">
-        ${cards || '<p class="p-2 text-sm text-stone-400">No customers</p>'}
+        ${cards || `<p class="p-2 text-sm text-stone-400">${emptyMsg}</p>`}
       </div>
     `;
     return;
   }
 
-  const rows = state.customers
+  const rows = filtered
     .map((customer) => {
       const info = salesMap.get(customer.id) || { orderCount: 0, totalSpent: 0 };
       return `
@@ -402,21 +514,34 @@ function renderCustomersTable() {
           <th class="px-3 py-2.5">Actions</th>
         </tr>
       </thead>
-      <tbody>${rows}</tbody>
+      <tbody>${rows || `<tr><td colspan="5" class="px-3 py-6 text-center text-sm text-stone-400">${emptyMsg}</td></tr>`}</tbody>
     </table>
   `;
 }
 
 function renderProductsTable() {
+  const q = (els.searchProducts.value || "").toLowerCase().trim();
+  const filtered = state.products.filter((p) => {
+    if (!q) return true;
+    return (
+      p.name.toLowerCase().includes(q) ||
+      p.sku.toLowerCase().includes(q) ||
+      (p.brand || "").toLowerCase().includes(q) ||
+      (p.category || "").toLowerCase().includes(q)
+    );
+  });
+
   const salesMap = buildProductSalesMap();
+  const emptyMsg = q ? `ไม่พบสินค้าที่ตรงกับ "${esc(q)}"` : "No products";
 
   if (isMobileView()) {
-    const cards = state.products
+    const cards = filtered
       .map((product) => {
         const info = salesMap.get(product.id) || { sold: 0, revenue: 0, buyers: new Set() };
         return `
         <button type="button" data-product-actions="${product.id}" class="w-full rounded-lg border border-stone-200 bg-white p-3 text-left transition hover:bg-stone-50">
           <p class="text-sm font-semibold text-stone-800">${esc(product.name)}</p>
+          <p class="text-xs text-stone-400">SKU: ${esc(product.sku)}</p>
           <div class="mt-1 grid grid-cols-2 gap-1 text-xs text-stone-500">
             <span>Stock: ${product.stockQuantity}</span>
             <span>Sold: ${info.sold}</span>
@@ -429,18 +554,19 @@ function renderProductsTable() {
 
     els.productsTable.innerHTML = `
       <div class="grid gap-2 p-2">
-        ${cards || '<p class="p-2 text-sm text-stone-400">No products</p>'}
+        ${cards || `<p class="p-2 text-sm text-stone-400">${emptyMsg}</p>`}
       </div>
     `;
     return;
   }
 
-  const rows = state.products
+  const rows = filtered
     .map((product) => {
       const info = salesMap.get(product.id) || { sold: 0, revenue: 0, buyers: new Set() };
       return `
       <tr class="border-b border-stone-100 text-sm text-stone-700">
         <td class="px-3 py-2.5">${esc(product.name)}</td>
+        <td class="px-3 py-2.5">${esc(product.sku)}</td>
         <td class="px-3 py-2.5 text-right">${product.stockQuantity}</td>
         <td class="px-3 py-2.5 text-right">${info.sold}</td>
         <td class="px-3 py-2.5 text-right">${info.revenue.toLocaleString()}</td>
@@ -461,6 +587,7 @@ function renderProductsTable() {
       <thead class="bg-stone-50 text-left text-[11px] font-semibold uppercase tracking-wide text-stone-400">
         <tr>
           <th class="px-3 py-2.5">Product</th>
+          <th class="px-3 py-2.5">SKU</th>
           <th class="px-3 py-2.5 text-right">Stock</th>
           <th class="px-3 py-2.5 text-right">Sold</th>
           <th class="px-3 py-2.5 text-right">Revenue</th>
@@ -468,7 +595,7 @@ function renderProductsTable() {
           <th class="px-3 py-2.5">Actions</th>
         </tr>
       </thead>
-      <tbody>${rows}</tbody>
+      <tbody>${rows || `<tr><td colspan="7" class="px-3 py-6 text-center text-sm text-stone-400">${emptyMsg}</td></tr>`}</tbody>
     </table>
   `;
 }
@@ -482,27 +609,27 @@ async function renderInsights() {
   els.insightsTopBuyers.innerHTML = `
     <div class="grid gap-2">
       ${(buyers || [])
-        .map(
-          (buyer, index) =>
-            `<div class="rounded-lg border border-stone-200 bg-stone-50 p-3 text-sm text-stone-700">
+      .map(
+        (buyer, index) =>
+          `<div class="rounded-lg border border-stone-200 bg-stone-50 p-3 text-sm text-stone-700">
               <p class="font-semibold text-stone-800">#${index + 1} ${esc(buyer.fullName)}</p>
               <p class="mt-0.5 text-xs text-stone-500">${buyer.totalSpent.toLocaleString()} THB • ${buyer.orderCount} orders</p>
             </div>`,
-        )
-        .join("") || '<div class="text-sm text-stone-400">No data</div>'}
+      )
+      .join("") || '<div class="text-sm text-stone-400">No data</div>'}
     </div>`;
 
   els.insightsTopProducts.innerHTML = `
     <div class="grid gap-2">
       ${(products || [])
-        .map(
-          (product, index) =>
-            `<div class="rounded-lg border border-stone-200 bg-stone-50 p-3 text-sm text-stone-700">
+      .map(
+        (product, index) =>
+          `<div class="rounded-lg border border-stone-200 bg-stone-50 p-3 text-sm text-stone-700">
               <p class="font-semibold text-stone-800">#${index + 1} ${esc(product.productName)}</p>
               <p class="mt-0.5 text-xs text-stone-500">sold ${product.totalQuantity} • buyers ${product.buyerCount}</p>
             </div>`,
-        )
-        .join("") || '<div class="text-sm text-stone-400">No data</div>'}
+      )
+      .join("") || '<div class="text-sm text-stone-400">No data</div>'}
     </div>`;
 }
 
@@ -561,6 +688,7 @@ function productFormModal(product) {
       <label class="text-sm font-medium text-stone-600">Image URL<input id="modalProductImage" required value="${esc(data.images[0] || "")}" class="mt-1 w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-stone-800" /></label>
       <div class="md:col-span-2 flex gap-2">
         <button type="submit" class="rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-800">Save Product</button>
+        <button type="button" data-cli-product-save="${esc(product?.id || '')}" class="rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-xs font-semibold text-stone-600 transition hover:bg-stone-100" title="ดูคำสั่ง CLI">&lt;/&gt; CLI</button>
         <button type="button" data-modal-close class="rounded-lg border border-stone-300 px-4 py-2 text-sm text-stone-600 transition hover:bg-stone-100">Cancel</button>
       </div>
     </form>
@@ -590,6 +718,7 @@ function customerFormModal(customer) {
       </label>
       <div class="flex gap-2">
         <button type="submit" class="rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-800">Save Customer</button>
+        <button type="button" data-cli-customer-save="${esc(customer?.id || '')}" class="rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-xs font-semibold text-stone-600 transition hover:bg-stone-100" title="ดูคำสั่ง CLI">&lt;/&gt; CLI</button>
         <button type="button" data-modal-close class="rounded-lg border border-stone-300 px-4 py-2 text-sm text-stone-600 transition hover:bg-stone-100">Cancel</button>
       </div>
     </form>
@@ -839,9 +968,13 @@ async function onClickActions(event) {
   const customerOrdersId = event.target.dataset.customerOrders;
 
   const orderUpdateId = event.target.dataset.orderUpdate;
+  const orderDetailId = event.target.dataset.orderDetail;
+  const orderCliId = event.target.dataset.orderCli;
+  const cliProductSaveId = event.target.dataset.cliProductSave;
+  const cliCustomerSaveId = event.target.dataset.cliCustomerSave;
 
   try {
-    if (event.target.dataset.modalClose || event.target === els.modalBackdrop) {
+    if ("modalClose" in event.target.dataset || event.target === els.modalBackdrop) {
       closeModal();
       return;
     }
@@ -879,6 +1012,7 @@ async function onClickActions(event) {
           <p>Delete <strong>${esc(product?.name || productDeleteId)}</strong> ?</p>
           <div class="flex gap-2">
             <button id="confirmDeleteProduct" class="rounded-lg bg-red-600 px-4 py-2 text-white transition hover:bg-red-700">Confirm Delete</button>
+            <button id="cliDeleteProduct" class="rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-xs font-semibold text-stone-600 transition hover:bg-stone-100" title="ดูคำสั่ง CLI">&lt;/&gt; CLI</button>
             <button data-modal-close class="rounded-lg border border-stone-300 px-4 py-2 text-stone-600 transition hover:bg-stone-100">Cancel</button>
           </div>
         </div>`,
@@ -888,6 +1022,9 @@ async function onClickActions(event) {
         closeModal();
         showToast("Product deleted");
         await refreshAll();
+      });
+      document.getElementById("cliDeleteProduct").addEventListener("click", () => {
+        openCliModal(`Delete ${product?.name || 'Product'}`, 'DELETE', `/products/${productDeleteId}`, null);
       });
       return;
     }
@@ -913,6 +1050,7 @@ async function onClickActions(event) {
           <p class="text-xs text-red-500">If this customer has order history, API will reject this action.</p>
           <div class="flex gap-2">
             <button id="confirmDeleteCustomer" class="rounded-lg bg-red-600 px-4 py-2 text-white transition hover:bg-red-700">Confirm Delete</button>
+            <button id="cliDeleteCustomer" class="rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-xs font-semibold text-stone-600 transition hover:bg-stone-100" title="ดูคำสั่ง CLI">&lt;/&gt; CLI</button>
             <button data-modal-close class="rounded-lg border border-stone-300 px-4 py-2 text-stone-600 transition hover:bg-stone-100">Cancel</button>
           </div>
         </div>`,
@@ -923,11 +1061,19 @@ async function onClickActions(event) {
         showToast("Customer deleted");
         await refreshAll();
       });
+      document.getElementById("cliDeleteCustomer").addEventListener("click", () => {
+        openCliModal(`Delete ${customer?.fullName || 'Customer'}`, 'DELETE', `/customer/${customerDeleteId}`, null);
+      });
       return;
     }
 
     if (customerOrdersId) {
       await openCustomerOrdersModal(customerOrdersId);
+      return;
+    }
+
+    if (orderDetailId) {
+      openOrderDetailModal(orderDetailId);
       return;
     }
 
@@ -945,6 +1091,58 @@ async function onClickActions(event) {
 
       showToast("Order updated");
       await refreshAll();
+      return;
+    }
+
+    if (orderCliId) {
+      const statusEl = document.querySelector(`[data-order-status="${orderCliId}"]`);
+      const trackingEl = document.querySelector(`[data-order-tracking="${orderCliId}"]`);
+      const payload = {
+        status: statusEl.value,
+        ...(trackingEl.value ? { trackingNumber: trackingEl.value } : {}),
+      };
+      openCliModal('Update Order', 'PATCH', `/orders/${orderCliId}`, payload);
+      return;
+    }
+
+    if (cliProductSaveId !== undefined) {
+      const payload = {
+        name: document.getElementById('modalProductName').value,
+        description: document.getElementById('modalProductDescription').value,
+        price: Number(document.getElementById('modalProductPrice').value),
+        stockQuantity: Number(document.getElementById('modalProductStock').value),
+        sku: document.getElementById('modalProductSku').value,
+        category: document.getElementById('modalProductCategory').value,
+        brand: document.getElementById('modalProductBrand').value,
+        images: [document.getElementById('modalProductImage').value],
+        status: document.getElementById('modalProductStatus').value,
+      };
+      const isEdit = !!cliProductSaveId;
+      openCliModal(
+        isEdit ? 'Update Product' : 'Create Product',
+        isEdit ? 'PUT' : 'POST',
+        isEdit ? `/products/${cliProductSaveId}` : '/products',
+        payload,
+      );
+      return;
+    }
+
+    if (cliCustomerSaveId !== undefined) {
+      const payload = {
+        fullName: document.getElementById('modalCustomerName').value,
+        email: document.getElementById('modalCustomerEmail').value,
+        phone: document.getElementById('modalCustomerPhone').value,
+        address: document.getElementById('modalCustomerAddress').value,
+        status: document.getElementById('modalCustomerStatus').value,
+      };
+      const isEdit = !!cliCustomerSaveId;
+      openCliModal(
+        isEdit ? 'Update Customer' : 'Create Customer',
+        isEdit ? 'PUT' : 'POST',
+        isEdit ? `/customer/${cliCustomerSaveId}` : '/customer',
+        payload,
+      );
+      return;
     }
   } catch (error) {
     showToast(error.message, true);
@@ -994,53 +1192,53 @@ function onViewportResize() {
 
 /* ── Default seed data ── */
 const DEFAULT_CUSTOMERS = [
-  { fullName: "Somchai Applefan",  email: "somchai.applefan@example.com",  phone: "0810000000", address: "10 Apple Avenue, Bangkok 10100", status: "ACTIVE" },
-  { fullName: "Arisa Tech",        email: "arisa.tech@example.com",        phone: "0810137910", address: "11 Apple Avenue, Bangkok 10101", status: "ACTIVE" },
-  { fullName: "Narin Pro",         email: "narin.pro@example.com",         phone: "0810275820", address: "12 Apple Avenue, Bangkok 10102", status: "ACTIVE" },
-  { fullName: "Kanya Device",      email: "kanya.device@example.com",      phone: "0810413730", address: "13 Apple Avenue, Bangkok 10103", status: "ACTIVE" },
-  { fullName: "Preecha Studio",    email: "preecha.studio@example.com",    phone: "0810551640", address: "14 Apple Avenue, Bangkok 10104", status: "ACTIVE" },
-  { fullName: "Mali Creator",      email: "mali.creator@example.com",      phone: "0810689550", address: "15 Apple Avenue, Bangkok 10105", status: "ACTIVE" },
-  { fullName: "Thanawat Office",   email: "thanawat.office@example.com",   phone: "0810827460", address: "16 Apple Avenue, Bangkok 10106", status: "ACTIVE" },
-  { fullName: "Suda Mobile",       email: "suda.mobile@example.com",       phone: "0810965370", address: "17 Apple Avenue, Bangkok 10107", status: "ACTIVE" },
-  { fullName: "Anan Premium",      email: "anan.premium@example.com",      phone: "0811103280", address: "18 Apple Avenue, Bangkok 10108", status: "ACTIVE" },
-  { fullName: "Nicha Education",   email: "nicha.education@example.com",   phone: "0811241190", address: "19 Apple Avenue, Bangkok 10109", status: "ACTIVE" },
-  { fullName: "Phuri Developer",   email: "phuri.dev@example.com",         phone: "0811379100", address: "20 Apple Avenue, Bangkok 10110", status: "ACTIVE" },
-  { fullName: "Dao Business",      email: "dao.business@example.com",      phone: "0811517010", address: "21 Apple Avenue, Bangkok 10111", status: "ACTIVE" },
+  { fullName: "Somchai Applefan", email: "somchai.applefan@example.com", phone: "0810000000", address: "10 Apple Avenue, Bangkok 10100", status: "ACTIVE" },
+  { fullName: "Arisa Tech", email: "arisa.tech@example.com", phone: "0810137910", address: "11 Apple Avenue, Bangkok 10101", status: "ACTIVE" },
+  { fullName: "Narin Pro", email: "narin.pro@example.com", phone: "0810275820", address: "12 Apple Avenue, Bangkok 10102", status: "ACTIVE" },
+  { fullName: "Kanya Device", email: "kanya.device@example.com", phone: "0810413730", address: "13 Apple Avenue, Bangkok 10103", status: "ACTIVE" },
+  { fullName: "Preecha Studio", email: "preecha.studio@example.com", phone: "0810551640", address: "14 Apple Avenue, Bangkok 10104", status: "ACTIVE" },
+  { fullName: "Mali Creator", email: "mali.creator@example.com", phone: "0810689550", address: "15 Apple Avenue, Bangkok 10105", status: "ACTIVE" },
+  { fullName: "Thanawat Office", email: "thanawat.office@example.com", phone: "0810827460", address: "16 Apple Avenue, Bangkok 10106", status: "ACTIVE" },
+  { fullName: "Suda Mobile", email: "suda.mobile@example.com", phone: "0810965370", address: "17 Apple Avenue, Bangkok 10107", status: "ACTIVE" },
+  { fullName: "Anan Premium", email: "anan.premium@example.com", phone: "0811103280", address: "18 Apple Avenue, Bangkok 10108", status: "ACTIVE" },
+  { fullName: "Nicha Education", email: "nicha.education@example.com", phone: "0811241190", address: "19 Apple Avenue, Bangkok 10109", status: "ACTIVE" },
+  { fullName: "Phuri Developer", email: "phuri.dev@example.com", phone: "0811379100", address: "20 Apple Avenue, Bangkok 10110", status: "ACTIVE" },
+  { fullName: "Dao Business", email: "dao.business@example.com", phone: "0811517010", address: "21 Apple Avenue, Bangkok 10111", status: "ACTIVE" },
 ];
 
 const DEFAULT_PRODUCTS = [
-  { name: "iPhone 15",           price: 28900,  stockQuantity: 42, sku: "APPLE-001", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/001.jpg"], description: "iPhone 15 original Apple device with official Thailand warranty",          status: "ACTIVE" },
-  { name: "iPhone 15 Plus",      price: 32900,  stockQuantity: 35, sku: "APPLE-002", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/002.jpg"], description: "iPhone 15 Plus original Apple device with official Thailand warranty",     status: "ACTIVE" },
-  { name: "iPhone 15 Pro",       price: 41900,  stockQuantity: 28, sku: "APPLE-003", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/003.jpg"], description: "iPhone 15 Pro original Apple device with official Thailand warranty",      status: "ACTIVE" },
-  { name: "iPhone 15 Pro Max",   price: 48900,  stockQuantity: 25, sku: "APPLE-004", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/004.jpg"], description: "iPhone 15 Pro Max original Apple device with official Thailand warranty", status: "ACTIVE" },
-  { name: "iPhone 14",           price: 24900,  stockQuantity: 31, sku: "APPLE-005", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/005.jpg"], description: "iPhone 14 original Apple device with official Thailand warranty",          status: "ACTIVE" },
-  { name: "iPhone 14 Plus",      price: 28900,  stockQuantity: 22, sku: "APPLE-006", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/006.jpg"], description: "iPhone 14 Plus original Apple device with official Thailand warranty",     status: "ACTIVE" },
-  { name: "iPhone SE (3rd Gen)", price: 15900,  stockQuantity: 17, sku: "APPLE-007", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/007.jpg"], description: "iPhone SE (3rd Gen) original Apple device with official Thailand warranty", status: "ACTIVE" },
-  { name: "iPad 10th Gen",       price: 13900,  stockQuantity: 27, sku: "APPLE-008", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/008.jpg"], description: "iPad 10th Gen original Apple device with official Thailand warranty",      status: "ACTIVE" },
-  { name: "iPad Air M2",         price: 23900,  stockQuantity: 20, sku: "APPLE-009", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/009.jpg"], description: "iPad Air M2 original Apple device with official Thailand warranty",        status: "ACTIVE" },
-  { name: "iPad Pro 11 M4",      price: 39900,  stockQuantity: 16, sku: "APPLE-010", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/010.jpg"], description: "iPad Pro 11 M4 original Apple device with official Thailand warranty",     status: "ACTIVE" },
-  { name: "iPad Pro 13 M4",      price: 47900,  stockQuantity: 12, sku: "APPLE-011", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/011.jpg"], description: "iPad Pro 13 M4 original Apple device with official Thailand warranty",     status: "ACTIVE" },
-  { name: "iPad mini",           price: 19900,  stockQuantity: 18, sku: "APPLE-012", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/012.jpg"], description: "iPad mini original Apple device with official Thailand warranty",           status: "ACTIVE" },
-  { name: "MacBook Air 13 M3",   price: 38900,  stockQuantity: 14, sku: "APPLE-013", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/013.jpg"], description: "MacBook Air 13 M3 original Apple device with official Thailand warranty",  status: "ACTIVE" },
-  { name: "MacBook Air 15 M3",   price: 45900,  stockQuantity: 10, sku: "APPLE-014", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/014.jpg"], description: "MacBook Air 15 M3 original Apple device with official Thailand warranty",  status: "ACTIVE" },
-  { name: "MacBook Pro 14 M3",   price: 62900,  stockQuantity: 9,  sku: "APPLE-015", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/015.jpg"], description: "MacBook Pro 14 M3 original Apple device with official Thailand warranty",  status: "ACTIVE" },
+  { name: "iPhone 15", price: 28900, stockQuantity: 42, sku: "APPLE-001", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/001.jpg"], description: "iPhone 15 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "iPhone 15 Plus", price: 32900, stockQuantity: 35, sku: "APPLE-002", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/002.jpg"], description: "iPhone 15 Plus original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "iPhone 15 Pro", price: 41900, stockQuantity: 28, sku: "APPLE-003", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/003.jpg"], description: "iPhone 15 Pro original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "iPhone 15 Pro Max", price: 48900, stockQuantity: 25, sku: "APPLE-004", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/004.jpg"], description: "iPhone 15 Pro Max original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "iPhone 14", price: 24900, stockQuantity: 31, sku: "APPLE-005", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/005.jpg"], description: "iPhone 14 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "iPhone 14 Plus", price: 28900, stockQuantity: 22, sku: "APPLE-006", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/006.jpg"], description: "iPhone 14 Plus original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "iPhone SE (3rd Gen)", price: 15900, stockQuantity: 17, sku: "APPLE-007", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/007.jpg"], description: "iPhone SE (3rd Gen) original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "iPad 10th Gen", price: 13900, stockQuantity: 27, sku: "APPLE-008", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/008.jpg"], description: "iPad 10th Gen original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "iPad Air M2", price: 23900, stockQuantity: 20, sku: "APPLE-009", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/009.jpg"], description: "iPad Air M2 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "iPad Pro 11 M4", price: 39900, stockQuantity: 16, sku: "APPLE-010", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/010.jpg"], description: "iPad Pro 11 M4 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "iPad Pro 13 M4", price: 47900, stockQuantity: 12, sku: "APPLE-011", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/011.jpg"], description: "iPad Pro 13 M4 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "iPad mini", price: 19900, stockQuantity: 18, sku: "APPLE-012", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/012.jpg"], description: "iPad mini original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "MacBook Air 13 M3", price: 38900, stockQuantity: 14, sku: "APPLE-013", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/013.jpg"], description: "MacBook Air 13 M3 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "MacBook Air 15 M3", price: 45900, stockQuantity: 10, sku: "APPLE-014", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/014.jpg"], description: "MacBook Air 15 M3 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "MacBook Pro 14 M3", price: 62900, stockQuantity: 9, sku: "APPLE-015", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/015.jpg"], description: "MacBook Pro 14 M3 original Apple device with official Thailand warranty", status: "ACTIVE" },
   { name: "MacBook Pro 16 M3 Max", price: 119900, stockQuantity: 6, sku: "APPLE-016", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/016.jpg"], description: "MacBook Pro 16 M3 Max original Apple device with official Thailand warranty", status: "ACTIVE" },
-  { name: "iMac 24 M3",          price: 49900,  stockQuantity: 11, sku: "APPLE-017", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/017.jpg"], description: "iMac 24 M3 original Apple device with official Thailand warranty",          status: "ACTIVE" },
-  { name: "Mac mini M2",         price: 20900,  stockQuantity: 13, sku: "APPLE-018", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/018.jpg"], description: "Mac mini M2 original Apple device with official Thailand warranty",         status: "ACTIVE" },
-  { name: "Mac Studio M2 Max",   price: 74900,  stockQuantity: 5,  sku: "APPLE-019", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/019.jpg"], description: "Mac Studio M2 Max original Apple device with official Thailand warranty",   status: "OUT_OF_STOCK" },
-  { name: "Mac Pro M2 Ultra",    price: 229900, stockQuantity: 2,  sku: "APPLE-020", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/020.jpg"], description: "Mac Pro M2 Ultra original Apple device with official Thailand warranty",    status: "OUT_OF_STOCK" },
-  { name: "Apple Watch SE",      price: 9490,   stockQuantity: 30, sku: "APPLE-021", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/021.jpg"], description: "Apple Watch SE original Apple device with official Thailand warranty",      status: "ACTIVE" },
-  { name: "Apple Watch Series 9",price: 15900,  stockQuantity: 26, sku: "APPLE-022", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/022.jpg"], description: "Apple Watch Series 9 original Apple device with official Thailand warranty",status: "ACTIVE" },
-  { name: "Apple Watch Ultra 2", price: 31900,  stockQuantity: 8,  sku: "APPLE-023", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/023.jpg"], description: "Apple Watch Ultra 2 original Apple device with official Thailand warranty", status: "ACTIVE" },
-  { name: "AirPods 2",           price: 4990,   stockQuantity: 40, sku: "APPLE-024", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/024.jpg"], description: "AirPods 2 original Apple device with official Thailand warranty",           status: "ACTIVE" },
-  { name: "AirPods 3",           price: 6790,   stockQuantity: 34, sku: "APPLE-025", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/025.jpg"], description: "AirPods 3 original Apple device with official Thailand warranty",           status: "ACTIVE" },
-  { name: "AirPods Pro 2",       price: 8990,   stockQuantity: 37, sku: "APPLE-026", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/026.jpg"], description: "AirPods Pro 2 original Apple device with official Thailand warranty",       status: "ACTIVE" },
-  { name: "AirPods Max",         price: 19900,  stockQuantity: 7,  sku: "APPLE-027", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/027.jpg"], description: "AirPods Max original Apple device with official Thailand warranty",         status: "ACTIVE" },
-  { name: "HomePod mini",        price: 3990,   stockQuantity: 33, sku: "APPLE-028", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/028.jpg"], description: "HomePod mini original Apple device with official Thailand warranty",        status: "ACTIVE" },
-  { name: "Apple TV 4K",         price: 5990,   stockQuantity: 21, sku: "APPLE-029", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/029.jpg"], description: "Apple TV 4K original Apple device with official Thailand warranty",         status: "ACTIVE" },
-  { name: "Magic Keyboard",      price: 3790,   stockQuantity: 24, sku: "APPLE-030", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/030.jpg"], description: "Magic Keyboard original Apple device with official Thailand warranty",      status: "ACTIVE" },
-  { name: "Magic Mouse",         price: 2690,   stockQuantity: 29, sku: "APPLE-031", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/031.jpg"], description: "Magic Mouse original Apple device with official Thailand warranty",         status: "ACTIVE" },
-  { name: "Studio Display",      price: 54900,  stockQuantity: 4,  sku: "APPLE-032", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/032.jpg"], description: "Studio Display original Apple device with official Thailand warranty",      status: "OUT_OF_STOCK" },
+  { name: "iMac 24 M3", price: 49900, stockQuantity: 11, sku: "APPLE-017", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/017.jpg"], description: "iMac 24 M3 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "Mac mini M2", price: 20900, stockQuantity: 13, sku: "APPLE-018", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/018.jpg"], description: "Mac mini M2 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "Mac Studio M2 Max", price: 74900, stockQuantity: 5, sku: "APPLE-019", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/019.jpg"], description: "Mac Studio M2 Max original Apple device with official Thailand warranty", status: "OUT_OF_STOCK" },
+  { name: "Mac Pro M2 Ultra", price: 229900, stockQuantity: 2, sku: "APPLE-020", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/020.jpg"], description: "Mac Pro M2 Ultra original Apple device with official Thailand warranty", status: "OUT_OF_STOCK" },
+  { name: "Apple Watch SE", price: 9490, stockQuantity: 30, sku: "APPLE-021", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/021.jpg"], description: "Apple Watch SE original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "Apple Watch Series 9", price: 15900, stockQuantity: 26, sku: "APPLE-022", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/022.jpg"], description: "Apple Watch Series 9 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "Apple Watch Ultra 2", price: 31900, stockQuantity: 8, sku: "APPLE-023", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/023.jpg"], description: "Apple Watch Ultra 2 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "AirPods 2", price: 4990, stockQuantity: 40, sku: "APPLE-024", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/024.jpg"], description: "AirPods 2 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "AirPods 3", price: 6790, stockQuantity: 34, sku: "APPLE-025", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/025.jpg"], description: "AirPods 3 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "AirPods Pro 2", price: 8990, stockQuantity: 37, sku: "APPLE-026", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/026.jpg"], description: "AirPods Pro 2 original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "AirPods Max", price: 19900, stockQuantity: 7, sku: "APPLE-027", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/027.jpg"], description: "AirPods Max original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "HomePod mini", price: 3990, stockQuantity: 33, sku: "APPLE-028", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/028.jpg"], description: "HomePod mini original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "Apple TV 4K", price: 5990, stockQuantity: 21, sku: "APPLE-029", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/029.jpg"], description: "Apple TV 4K original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "Magic Keyboard", price: 3790, stockQuantity: 24, sku: "APPLE-030", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/030.jpg"], description: "Magic Keyboard original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "Magic Mouse", price: 2690, stockQuantity: 29, sku: "APPLE-031", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/031.jpg"], description: "Magic Mouse original Apple device with official Thailand warranty", status: "ACTIVE" },
+  { name: "Studio Display", price: 54900, stockQuantity: 4, sku: "APPLE-032", category: "ELECTRONICS", brand: "Apple", images: ["https://example.com/apple/032.jpg"], description: "Studio Display original Apple device with official Thailand warranty", status: "OUT_OF_STOCK" },
 ];
 
 async function clearAllData() {
@@ -1087,10 +1285,13 @@ function generateOrderPayloads(customers, products) {
   const paymentMethods = ["CREDIT_CARD", "BANK_TRANSFER", "COD"];
   const payloads = [];
 
+  // ใช้เฉพาะสินค้าที่ ACTIVE (ไม่ใช้ OUT_OF_STOCK เพื่อป้องกัน 400 error)
+  const available = products.filter((p) => p.status !== "OUT_OF_STOCK");
+
   for (let i = 0; i < 24; i++) {
     const customer = customers[i % customers.length];
-    const firstProduct = products[i % products.length];
-    const secondProduct = products[(i * 3 + 5) % products.length];
+    const firstProduct = available[i % available.length];
+    const secondProduct = available[(i * 3 + 5) % available.length];
 
     const firstQty = (i % 3) + 1;
     const secondQty = ((i + 1) % 2) + 1;
@@ -1110,6 +1311,148 @@ function generateOrderPayloads(customers, products) {
   }
 
   return payloads;
+}
+
+function openOrderDetailModal(orderId) {
+  const order = state.orders.find((o) => o.id === orderId);
+  if (!order) return;
+
+  const payload = {
+    customerId: order.customerId,
+    items: order.items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
+    paymentMethod: order.paymentMethod,
+    shippingAddress: order.shippingAddress,
+  };
+  if (order.note) payload.note = order.note;
+
+  const apiBase = window.location.origin;
+  const payloadJson = JSON.stringify(payload, null, 2);
+  const payloadInline = JSON.stringify(payload);
+
+  const cmds = {
+    curl: `curl -X POST '${apiBase}/orders' \\\n  -H 'Content-Type: application/json' \\\n  -d '${payloadInline}'`,
+    node: `const response = await fetch('${apiBase}/orders', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify(${payloadJson})\n});\nconst data = await response.json();\nconsole.log(data);`,
+    wget: `wget -qO- \\\n  --method=POST \\\n  --body-data='${payloadInline}' \\\n  --header='Content-Type: application/json' \\\n  '${apiBase}/orders'`,
+  };
+
+  const itemsHTML = order.items
+    .map(
+      (item) => `
+      <div class="flex justify-between py-1 text-xs text-stone-700 border-b border-stone-100 last:border-0">
+        <span>${esc(item.productName)} × ${item.quantity}</span>
+        <span class="font-medium">${item.subtotal.toLocaleString()} THB</span>
+      </div>`,
+    )
+    .join("");
+
+  const activeTab = "rounded-md bg-stone-800 px-3 py-1 text-xs font-semibold text-white";
+  const inactiveTab = "rounded-md border border-stone-300 px-3 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50";
+
+  openModal(
+    `รายละเอียด Order #${orderId.slice(0, 8)}`,
+    `<div class="grid gap-4 text-sm">
+      <div class="rounded-lg border border-stone-200 bg-stone-50 p-3 grid gap-1">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="font-semibold text-stone-800">${esc(customerName(order.customerId))}</span>
+          <span class="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700">${order.status}</span>
+        </div>
+        <p class="text-xs text-stone-400">${new Date(order.placedAt).toLocaleString()}</p>
+        <p class="text-xs text-stone-500">ชำระ: ${order.paymentMethod} • รวม <strong class="text-stone-800">${order.totalAmount.toLocaleString()} THB</strong></p>
+        ${order.trackingNumber ? `<p class="text-xs text-stone-500">Tracking: ${esc(order.trackingNumber)}</p>` : ""}
+        ${order.note ? `<p class="text-xs text-stone-500">Note: ${esc(order.note)}</p>` : ""}
+      </div>
+
+      <div>
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-stone-400">สินค้าในรายการ</p>
+        <div class="rounded-lg border border-stone-200 bg-white p-2">${itemsHTML}</div>
+      </div>
+
+      <div>
+        <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-400">ทำรายการผ่าน CLI</p>
+        <div class="mb-2 flex gap-1 flex-wrap">
+          <button id="tabCurl" class="${activeTab}">curl</button>
+          <button id="tabNode" class="${inactiveTab}">Node.js</button>
+          <button id="tabWget" class="${inactiveTab}">wget</button>
+        </div>
+        <div class="relative">
+          <pre id="cliOutput" class="max-h-48 overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-stone-900 p-3 text-xs text-green-400">${esc(cmds.curl)}</pre>
+          <button id="copyCliBtn" class="absolute right-2 top-2 rounded border border-stone-600 bg-stone-700 px-2 py-1 text-[10px] text-stone-300 transition hover:bg-stone-600">Copy</button>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button id="repeatOrderBtn" class="rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-800">ทำรายการซ้ำ</button>
+        <button id="closeOrderDetailBtn" class="rounded-lg border border-stone-300 px-4 py-2 text-sm text-stone-600 transition hover:bg-stone-100">ปิด</button>
+      </div>
+    </div>`,
+  );
+
+  const tabCurl = document.getElementById("tabCurl");
+  const tabNode = document.getElementById("tabNode");
+  const tabWget = document.getElementById("tabWget");
+  const cliOutput = document.getElementById("cliOutput");
+  const allTabs = [tabCurl, tabNode, tabWget];
+
+  function setTab(active, cmd) {
+    allTabs.forEach((t) => (t.className = inactiveTab));
+    active.className = activeTab;
+    cliOutput.textContent = cmd;
+  }
+
+  tabCurl.addEventListener("click", () => setTab(tabCurl, cmds.curl));
+  tabNode.addEventListener("click", () => setTab(tabNode, cmds.node));
+  tabWget.addEventListener("click", () => setTab(tabWget, cmds.wget));
+
+  document.getElementById("copyCliBtn").addEventListener("click", () => {
+    navigator.clipboard.writeText(cliOutput.textContent).then(() => showToast("คัดลอกแล้ว"));
+  });
+
+  document.getElementById("closeOrderDetailBtn").addEventListener("click", closeModal);
+  document.getElementById("repeatOrderBtn").addEventListener("click", () => repeatOrder(order));
+}
+
+function repeatOrder(order) {
+  closeModal();
+
+  const ordersTab = document.querySelector('[data-tab="orders"]');
+  if (ordersTab) ordersTab.click();
+
+  // Set customer — validate it exists in the select
+  els.orderCustomerId.value = order.customerId;
+  if (els.orderCustomerId.value !== order.customerId) {
+    showToast('ลูกค้าในรายการนี้ไม่พบในระบบแล้ว', true);
+    return;
+  }
+
+  els.orderPaymentMethod.value = order.paymentMethod;
+  els.orderAddress.value = order.shippingAddress || '';
+  els.orderNote.value = order.note || '';
+
+  // Set items — validate each product still exists
+  els.orderItems.innerHTML = '';
+  let missingCount = 0;
+  for (const item of order.items) {
+    const productExists = state.products.some((p) => p.id === item.productId);
+    if (productExists) {
+      addOrderItemRow(item.productId, item.quantity);
+    } else {
+      missingCount++;
+    }
+  }
+
+  if (missingCount > 0) {
+    showToast(`สินค้า ${missingCount} รายการไม่พบในระบบแล้ว`, true);
+  }
+
+  // Ensure at least one item row
+  if (!els.orderItems.querySelector('[data-order-item-product]')) {
+    addOrderItemRow();
+  }
+
+  setTimeout(() => {
+    els.orderForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+  showToast('โหลดรายการซ้ำแล้ว — กดสั่งซื้อเพื่อยืนยัน');
 }
 
 function openResetDataModal() {
@@ -1150,10 +1493,25 @@ els.addOrderItemBtn.addEventListener("click", () => addOrderItemRow());
 els.orderForm.addEventListener("submit", onCreateOrder);
 els.loadHistoryBtn.addEventListener("click", loadCustomerHistory);
 els.modalCloseBtn.addEventListener("click", closeModal);
+els.searchOrders.addEventListener("input", renderOrdersList);
+els.searchCustomers.addEventListener("input", renderCustomersTable);
+els.searchProducts.addEventListener("input", renderProductsTable);
 document.body.addEventListener("click", onClickActions);
 document.body.addEventListener("submit", onBodySubmit);
 window.addEventListener("keydown", onGlobalKeydown);
 window.addEventListener("resize", onViewportResize);
+
+document.getElementById('cliCreateOrderBtn').addEventListener('click', () => {
+  const items = collectOrderItems();
+  const payload = {
+    customerId: els.orderCustomerId.value,
+    items,
+    paymentMethod: els.orderPaymentMethod.value,
+    shippingAddress: els.orderAddress.value,
+    ...(els.orderNote.value ? { note: els.orderNote.value } : {}),
+  };
+  openCliModal('สร้างคำสั่งซื้อ', 'POST', '/orders', payload);
+});
 
 addOrderItemRow("", 1);
 refreshAll(true);
