@@ -132,6 +132,23 @@ export interface CustomerResponse {
   updatedAt: string;
 }
 
+export interface CustomerOrderHistoryResponse {
+  customer: CustomerResponse;
+  orders: unknown[];
+  summary: {
+    totalOrders: number;
+    totalSpent: number;
+    distinctProducts: number;
+    lastOrderAt: string | null;
+    products: Array<{
+      productId: string;
+      productName: string;
+      totalQuantity: number;
+      totalSpent: number;
+    }>;
+  };
+}
+
 export interface OrderItemResponse {
   productId: string;
   productName: string;

@@ -48,7 +48,7 @@ export class ProductsService {
     private readonly productsRepository: ProductsRepository,
     private readonly ordersRepository: OrdersRepository,
     private readonly customersRepository: CustomersRepository,
-  ) { }
+  ) {}
 
   // ═══════════════════════════════════════════════════════════════════
   // 📗 READ OPERATIONS — เมธอดสำหรับอ่านข้อมูล

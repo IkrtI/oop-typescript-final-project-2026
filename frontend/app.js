@@ -434,10 +434,11 @@ function renderOrdersList() {
         <p class="mt-1 text-xs text-stone-400">${new Date(order.placedAt).toLocaleString()}</p>
         <ul class="mt-2 grid gap-0.5">${itemsHTML}</ul>
 
-        <div class="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto_auto]">
+        <div class="mt-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto_auto_auto]">
           <select data-order-status="${order.id}" class="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-xs text-stone-700">${statusOptions}</select>
           <input data-order-tracking="${order.id}" value="${esc(order.trackingNumber || "")}" placeholder="tracking number" class="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-xs text-stone-700" />
           <button data-order-update="${order.id}" class="rounded-lg bg-teal-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-teal-800">Update</button>
+          <button data-order-delete="${order.id}" class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-100">ลบ</button>
           <button data-order-cli="${order.id}" class="rounded-lg border border-stone-300 bg-stone-50 px-2 py-1.5 text-[11px] font-semibold text-stone-500 transition hover:bg-stone-100" title="CLI">&lt;/&gt;</button>
         </div>
       </article>`;
@@ -602,7 +603,7 @@ function renderProductsTable() {
 
 async function renderInsights() {
   const [buyers, products] = await Promise.all([
-    api("/customer/insights/top-buyers?limit=5"),
+    api("/customers/insights/top-buyers?limit=5"),
     api("/products/insights/most-bought?limit=5"),
   ]);
 
@@ -726,7 +727,7 @@ function customerFormModal(customer) {
 }
 
 async function openCustomerOrdersModal(customerId) {
-  const history = await api(`/customer/${customerId}/orders`);
+  const history = await api(`/customers/${customerId}/orders`);
   const ordersHTML = (history.orders || [])
     .map((order) => {
       const items = (order.items || [])
@@ -815,7 +816,7 @@ async function loadCustomerHistory() {
   }
 
   try {
-    const history = await api(`/customer/${customerId}/orders`);
+    const history = await api(`/customers/${customerId}/orders`);
     renderCustomerHistoryInline(history);
   } catch (error) {
     showToast(error.message, true);
@@ -827,7 +828,7 @@ async function refreshAll(showOverlay = false) {
   try {
     const [products, customers, orders] = await Promise.all([
       api("/products"),
-      api("/customer"),
+      api("/customers"),
       api("/orders"),
     ]);
 
@@ -938,13 +939,13 @@ async function submitCustomerModal(form) {
   };
 
   if (customerId) {
-    await api(`/customer/${customerId}`, {
+    await api(`/customers/${customerId}`, {
       method: "PUT",
       body: JSON.stringify(payload),
     });
     showToast("Customer updated");
   } else {
-    await api("/customer", {
+    await api("/customers", {
       method: "POST",
       body: JSON.stringify(payload),
     });
@@ -959,17 +960,18 @@ async function onClickActions(event) {
   const customerActionCard = event.target.closest("[data-customer-actions]");
   const productActionCard = event.target.closest("[data-product-actions]");
 
-  const productEditId = event.target.dataset.productEdit;
-  const productDeleteId = event.target.dataset.productDelete;
-  const productBuyersId = event.target.dataset.productBuyers;
+  const productEditId = event.target.closest("[data-product-edit]")?.dataset.productEdit;
+  const productDeleteId = event.target.closest("[data-product-delete]")?.dataset.productDelete;
+  const productBuyersId = event.target.closest("[data-product-buyers]")?.dataset.productBuyers;
 
-  const customerEditId = event.target.dataset.customerEdit;
-  const customerDeleteId = event.target.dataset.customerDelete;
-  const customerOrdersId = event.target.dataset.customerOrders;
+  const customerEditId = event.target.closest("[data-customer-edit]")?.dataset.customerEdit;
+  const customerDeleteId = event.target.closest("[data-customer-delete]")?.dataset.customerDelete;
+  const customerOrdersId = event.target.closest("[data-customer-orders]")?.dataset.customerOrders;
 
-  const orderUpdateId = event.target.dataset.orderUpdate;
-  const orderDetailId = event.target.dataset.orderDetail;
-  const orderCliId = event.target.dataset.orderCli;
+  const orderUpdateId = event.target.closest("[data-order-update]")?.dataset.orderUpdate;
+  const orderDeleteId = event.target.closest("[data-order-delete]")?.dataset.orderDelete;
+  const orderDetailId = event.target.closest("[data-order-detail]")?.dataset.orderDetail;
+  const orderCliId = event.target.closest("[data-order-cli]")?.dataset.orderCli;
   const cliProductSaveId = event.target.dataset.cliProductSave;
   const cliCustomerSaveId = event.target.dataset.cliCustomerSave;
 
@@ -1056,13 +1058,13 @@ async function onClickActions(event) {
         </div>`,
       );
       document.getElementById("confirmDeleteCustomer").addEventListener("click", async () => {
-        await api(`/customer/${customerDeleteId}`, { method: "DELETE" });
+        await api(`/customers/${customerDeleteId}`, { method: "DELETE" });
         closeModal();
         showToast("Customer deleted");
         await refreshAll();
       });
       document.getElementById("cliDeleteCustomer").addEventListener("click", () => {
-        openCliModal(`Delete ${customer?.fullName || 'Customer'}`, 'DELETE', `/customer/${customerDeleteId}`, null);
+        openCliModal(`Delete ${customer?.fullName || 'Customer'}`, 'DELETE', `/customers/${customerDeleteId}`, null);
       });
       return;
     }
@@ -1091,6 +1093,27 @@ async function onClickActions(event) {
 
       showToast("Order updated");
       await refreshAll();
+      return;
+    }
+
+    if (orderDeleteId) {
+      const order = state.orders.find((item) => item.id === orderDeleteId);
+      openModal(
+        "ลบคำสั่งซื้อ",
+        `<div class="grid gap-3 text-sm text-stone-700">
+          <p>ต้องการลบคำสั่งซื้อ <strong>${esc(orderDeleteId.slice(0, 8))}</strong> (${esc(customerName(order?.customerId))}) ?</p>
+          <div class="flex gap-2">
+            <button id="confirmDeleteOrder" class="rounded-lg bg-red-600 px-4 py-2 text-white transition hover:bg-red-700">ยืนยันการลบ</button>
+            <button data-modal-close class="rounded-lg border border-stone-300 px-4 py-2 text-stone-600 transition hover:bg-stone-100">ยกเลิก</button>
+          </div>
+        </div>`,
+      );
+      document.getElementById("confirmDeleteOrder").addEventListener("click", async () => {
+        await api(`/orders/${orderDeleteId}`, { method: "DELETE" });
+        closeModal();
+        showToast("ลบคำสั่งซื้อเรียบร้อยแล้ว");
+        await refreshAll();
+      });
       return;
     }
 
@@ -1139,7 +1162,7 @@ async function onClickActions(event) {
       openCliModal(
         isEdit ? 'Update Customer' : 'Create Customer',
         isEdit ? 'PUT' : 'POST',
-        isEdit ? `/customer/${cliCustomerSaveId}` : '/customer',
+        isEdit ? `/customers/${cliCustomerSaveId}` : '/customers',
         payload,
       );
       return;
@@ -1245,7 +1268,7 @@ async function clearAllData() {
   showLoading("กำลังลบข้อมูลทั้งหมด...");
   try {
     await Promise.all(state.orders.map((o) => api(`/orders/${o.id}`, { method: "DELETE" })));
-    await Promise.all(state.customers.map((c) => api(`/customer/${c.id}`, { method: "DELETE" })));
+    await Promise.all(state.customers.map((c) => api(`/customers/${c.id}`, { method: "DELETE" })));
     await Promise.all(state.products.map((p) => api(`/products/${p.id}`, { method: "DELETE" })));
     await refreshAll();
     showToast("ลบข้อมูลทั้งหมดเรียบร้อยแล้ว");
@@ -1261,7 +1284,7 @@ async function seedDefaultData() {
   try {
     // สร้าง customers และ products พร้อมกัน → เก็บ object ที่ API return (มี id)
     const [createdCustomers, createdProducts] = await Promise.all([
-      Promise.all(DEFAULT_CUSTOMERS.map((c) => api("/customer", { method: "POST", body: JSON.stringify(c) }))),
+      Promise.all(DEFAULT_CUSTOMERS.map((c) => api("/customers", { method: "POST", body: JSON.stringify(c) }))),
       Promise.all(DEFAULT_PRODUCTS.map((p) => api("/products", { method: "POST", body: JSON.stringify(p) }))),
     ]);
 
