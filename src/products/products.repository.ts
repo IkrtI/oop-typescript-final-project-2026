@@ -27,4 +27,15 @@ export class ProductsRepository extends JsonFileRepository<Product> {
     // ส่ง path ไปยังไฟล์ JSON ที่เก็บข้อมูลสินค้า
     super(join(dataDir, "products.json"));
   }
+
+  /**
+   * ค้นหาสินค้าด้วย SKU — ใช้แทน findAll() + some() เพื่อ efficiency
+   * คืน Product ถ้าเจอ, null ถ้าไม่เจอ
+   */
+  async findBySku(sku: string, excludeId?: string): Promise<Product | null> {
+    const all = await this.findAll();
+    return (
+      all.find((p) => p.sku === sku && p.id !== excludeId) ?? null
+    );
+  }
 }

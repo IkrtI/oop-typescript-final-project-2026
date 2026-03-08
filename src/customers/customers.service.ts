@@ -6,7 +6,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { CustomersRepository } from "./customers.repository";
 import { OrdersRepository } from "../orders/orders.repository";
-import { ProductsRepository } from "../products/products.repository";
+
 import { Customer } from "./entities/customer.entity";
 import { CreateCustomerDto } from "./dto/create-customer.dto";
 import { UpdateCustomerDto } from "./dto/update-customer.dto";
@@ -18,8 +18,7 @@ export class CustomersService {
   constructor(
     private readonly customersRepository: CustomersRepository,
     private readonly ordersRepository: OrdersRepository,
-    private readonly productsRepository: ProductsRepository,
-  ) {}
+  ) { }
 
   async findAll(): Promise<Customer[]> {
     return this.customersRepository.findAll();
@@ -79,9 +78,13 @@ export class CustomersService {
     const nextPhone = dto.phone ?? existing.phone;
     await this.ensureUniqueEmailAndPhone(nextEmail, nextPhone, existing.id);
 
+    const definedUpdates = Object.fromEntries(
+      Object.entries(dto).filter(([, value]) => value !== undefined),
+    );
+
     const patched: Customer = {
       ...existing,
-      ...dto,
+      ...definedUpdates,
       email: nextEmail,
       updatedAt: new Date().toISOString(),
     };
@@ -252,63 +255,5 @@ export class CustomersService {
       throw new BadRequestException("Phone already exists");
     }
   }
-
-  async getProductsMostBought(limit = 5): Promise<
-    Array<{
-      productId: string;
-      productName: string;
-      totalQuantity: number;
-      totalRevenue: number;
-      buyerCount: number;
-    }>
-  > {
-    const [orders, products] = await Promise.all([
-      this.ordersRepository.findAll(),
-      this.productsRepository.findAll(),
-    ]);
-    const productsMap = new Map(
-      products.map((product) => [product.id, product]),
-    );
-
-    const grouped = new Map<
-      string,
-      {
-        productId: string;
-        productName: string;
-        totalQuantity: number;
-        totalRevenue: number;
-        buyers: Set<string>;
-      }
-    >();
-
-    for (const order of orders) {
-      for (const item of order.items) {
-        const row = grouped.get(item.productId) ?? {
-          productId: item.productId,
-          productName: item.productName,
-          totalQuantity: 0,
-          totalRevenue: 0,
-          buyers: new Set<string>(),
-        };
-
-        row.totalQuantity += item.quantity;
-        row.totalRevenue += item.subtotal;
-        row.productName =
-          productsMap.get(item.productId)?.name ?? item.productName;
-        row.buyers.add(order.customerId);
-        grouped.set(item.productId, row);
-      }
-    }
-
-    return [...grouped.values()]
-      .map((row) => ({
-        productId: row.productId,
-        productName: row.productName,
-        totalQuantity: row.totalQuantity,
-        totalRevenue: row.totalRevenue,
-        buyerCount: row.buyers.size,
-      }))
-      .sort((a, b) => b.totalQuantity - a.totalQuantity)
-      .slice(0, Math.max(1, limit));
-  }
 }
+
