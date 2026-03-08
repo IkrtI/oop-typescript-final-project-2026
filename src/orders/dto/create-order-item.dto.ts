@@ -1,19 +1,3 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════
- * 📘 DTO สำหรับรายการสินค้าในออเดอร์ (Nested DTO)
- * ═══════════════════════════════════════════════════════════════════════
- *
- * CreateOrderItemDto ใช้สำหรับ validate ข้อมูลสินค้าแต่ละรายการ
- * ที่ลูกค้าส่งมาตอนสั่งซื้อ
- *
- * 📘 Concept: Nested Validation
- * → DTO สามารถซ้อนกันได้ (DTO ภายใน DTO)
- * → CreateOrderDto มี items: CreateOrderItemDto[]
- * → NestJS จะ validate ทั้ง outer DTO และ inner DTO อัตโนมัติ
- *
- * ═══════════════════════════════════════════════════════════════════════
- */
-
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsInt, IsUUID, Min } from "class-validator";
 

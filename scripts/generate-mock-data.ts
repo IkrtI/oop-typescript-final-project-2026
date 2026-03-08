@@ -93,7 +93,9 @@ const products = productSeeds.map((seed, index) => {
     sku: `APPLE-${String(index + 1).padStart(3, "0")}`,
     category: "ELECTRONICS",
     brand: "Apple",
-    images: [`https://example.com/apple/${String(index + 1).padStart(3, "0")}.jpg`],
+    images: [
+      `https://example.com/apple/${String(index + 1).padStart(3, "0")}.jpg`,
+    ],
     weight: null,
     status: stockQuantity <= 5 ? "OUT_OF_STOCK" : "ACTIVE",
     createdAt: iso(createdAt),
@@ -156,8 +158,19 @@ for (let i = 0; i < 24; i += 1) {
 }
 
 const dataDir = path.join(process.cwd(), "data");
-fs.writeFileSync(path.join(dataDir, "customers.json"), JSON.stringify(customers, null, 2));
-fs.writeFileSync(path.join(dataDir, "products.json"), JSON.stringify(products, null, 2));
-fs.writeFileSync(path.join(dataDir, "orders.json"), JSON.stringify(orders, null, 2));
+fs.writeFileSync(
+  path.join(dataDir, "customers.json"),
+  JSON.stringify(customers, null, 2),
+);
+fs.writeFileSync(
+  path.join(dataDir, "products.json"),
+  JSON.stringify(products, null, 2),
+);
+fs.writeFileSync(
+  path.join(dataDir, "orders.json"),
+  JSON.stringify(orders, null, 2),
+);
 
-console.log(`Generated customers=${customers.length}, products=${products.length}, orders=${orders.length}`);
+console.log(
+  `Generated customers=${customers.length}, products=${products.length}, orders=${orders.length}`,
+);

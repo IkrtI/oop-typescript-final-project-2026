@@ -1,21 +1,3 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════
- * 📘 DTO สำหรับอัปเดตออเดอร์ (PATCH /orders/:id)
- * ═══════════════════════════════════════════════════════════════════════
- *
- * ออเดอร์สามารถอัปเดตได้เฉพาะ 3 field:
- *   - status         → เปลี่ยนสถานะ (ต้องตรวจ State Transition)
- *   - trackingNumber → เพิ่มเลขพัสดุ (ปกติส่งพร้อม status: SHIPPED)
- *   - note           → แก้ไขหมายเหตุ
- *
- * ⚠️ สิ่งที่แก้ไขไม่ได้:
- *   ❌ items        → สั่งไปแล้ว ไม่สามารถเปลี่ยนรายการได้
- *   ❌ totalAmount  → คำนวณจาก items ตอนสร้าง
- *   ❌ customerId   → ไม่สามารถเปลี่ยนเจ้าของออเดอร์
- *
- * ═══════════════════════════════════════════════════════════════════════
- */
-
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsString, IsEnum, IsOptional } from "class-validator";
 import { OrderStatus } from "../enums/order-status.enum";

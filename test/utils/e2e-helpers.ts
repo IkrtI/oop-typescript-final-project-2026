@@ -1,48 +1,40 @@
 import { expect } from "@jest/globals";
 
-import { mkdirSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { mkdirSync, writeFileSync } from "fs";
+import { join } from "path";
 
-/* ------------------------------------------------------------------ */
-/*  Paths                                                              */
-/* ------------------------------------------------------------------ */
-const DATA_DIR = join(process.cwd(), 'test', 'data');
-export const PRODUCTS_FILE = join(DATA_DIR, 'products.json');
-export const ORDERS_FILE = join(DATA_DIR, 'orders.json');
-export const CUSTOMERS_FILE = join(DATA_DIR, 'customers.json');
+const DATA_DIR = join(process.cwd(), "test", "data");
+export const PRODUCTS_FILE = join(DATA_DIR, "products.json");
+export const ORDERS_FILE = join(DATA_DIR, "orders.json");
+export const CUSTOMERS_FILE = join(DATA_DIR, "customers.json");
 
-/* ------------------------------------------------------------------ */
-/*  Data reset                                                         */
-/* ------------------------------------------------------------------ */
-
-/** Overwrite both JSON data files with empty arrays. */
 export function resetDataFiles(): void {
   process.env.DATA_DIR = DATA_DIR;
   mkdirSync(DATA_DIR, { recursive: true });
 
-  writeFileSync(PRODUCTS_FILE, '[]', 'utf-8');
-  writeFileSync(ORDERS_FILE, '[]', 'utf-8');
+  writeFileSync(PRODUCTS_FILE, "[]", "utf-8");
+  writeFileSync(ORDERS_FILE, "[]", "utf-8");
   writeFileSync(
     CUSTOMERS_FILE,
     JSON.stringify(
       [
         {
-          id: 'CUST-E2E-001',
-          fullName: 'Demo Customer',
-          email: 'cust-e2e-001@example.com',
-          phone: '0800000001',
-          address: '123 Test Street, Test City 10000',
-          status: 'ACTIVE',
+          id: "CUST-E2E-001",
+          fullName: "Demo Customer",
+          email: "cust-e2e-001@example.com",
+          phone: "0800000001",
+          address: "123 Test Street, Test City 10000",
+          status: "ACTIVE",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },
         {
-          id: 'CUST-MULTI',
-          fullName: 'Multi Buyer',
-          email: 'cust-multi@example.com',
-          phone: '0800000002',
-          address: '456 Multi Street',
-          status: 'ACTIVE',
+          id: "CUST-MULTI",
+          fullName: "Multi Buyer",
+          email: "cust-multi@example.com",
+          phone: "0800000002",
+          address: "456 Multi Street",
+          status: "ACTIVE",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },
@@ -50,23 +42,15 @@ export function resetDataFiles(): void {
       null,
       2,
     ),
-    'utf-8',
+    "utf-8",
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Unique identifier factories                                        */
-/* ------------------------------------------------------------------ */
-
 let skuCounter = 0;
-/** Return a unique SKU string per test run. */
-export function uniqueSku(prefix = 'TEST'): string {
+
+export function uniqueSku(prefix = "TEST"): string {
   return `${prefix}-${Date.now()}-${++skuCounter}`;
 }
-
-/* ------------------------------------------------------------------ */
-/*  Payload factories                                                  */
-/* ------------------------------------------------------------------ */
 
 export interface CreateProductPayload {
   name: string;
@@ -85,14 +69,14 @@ export function validProductPayload(
   overrides: Partial<CreateProductPayload> = {},
 ): CreateProductPayload {
   return {
-    name: 'Test Product',
-    description: 'A product created by E2E tests',
+    name: "Test Product",
+    description: "A product created by E2E tests",
     price: 199.99,
     stockQuantity: 50,
     sku: uniqueSku(),
-    category: 'ELECTRONICS',
-    brand: 'TestBrand',
-    images: ['https://example.com/img.jpg'],
+    category: "ELECTRONICS",
+    brand: "TestBrand",
+    images: ["https://example.com/img.jpg"],
     ...overrides,
   };
 }
@@ -178,37 +162,26 @@ export function validOrderPayload(
   overrides: Partial<CreateOrderPayload> = {},
 ): CreateOrderPayload {
   return {
-    customerId: 'CUST-E2E-001',
+    customerId: "CUST-E2E-001",
     items: [{ productId, quantity }],
-    paymentMethod: 'CREDIT_CARD',
-    shippingAddress: '123 Test Street, Test City 10000',
+    paymentMethod: "CREDIT_CARD",
+    shippingAddress: "123 Test Street, Test City 10000",
     ...overrides,
   };
 }
 
-/* ------------------------------------------------------------------ */
-/*  Assertion helpers                                                  */
-/* ------------------------------------------------------------------ */
-
-/**
- * Assert the standard success ApiResponse shape.
- * Returns the `data` property for further assertions.
- */
 export function expectApiSuccess<T = unknown>(body: unknown): T {
-  expect(body).toHaveProperty('success', true);
-  expect(body).toHaveProperty('message');
-  expect(typeof (body as { message: unknown }).message).toBe('string');
-  expect(body).toHaveProperty('data');
+  expect(body).toHaveProperty("success", true);
+  expect(body).toHaveProperty("message");
+  expect(typeof (body as { message: unknown }).message).toBe("string");
+  expect(body).toHaveProperty("data");
   return (body as { data: T }).data;
 }
 
-/**
- * Assert the standard NestJS error response shape.
- */
 export function expectErrorResponse(
   body: unknown,
   expectedStatus: number,
 ): void {
-  expect(body).toHaveProperty('statusCode', expectedStatus);
-  expect(body).toHaveProperty('message');
+  expect(body).toHaveProperty("statusCode", expectedStatus);
+  expect(body).toHaveProperty("message");
 }

@@ -23,7 +23,6 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const frontendPath = resolveFrontendPath();
 
-  // Serve frontend files from /frontend via /app.
   app.useStaticAssets(frontendPath, {
     prefix: "/app/",
   });
@@ -35,10 +34,8 @@ async function bootstrap(): Promise<void> {
       res.sendFile(join(frontendPath, "index.html"));
     });
 
-  // Enable CORS
   app.enableCors();
 
-  // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -47,7 +44,6 @@ async function bootstrap(): Promise<void> {
     }),
   );
 
-  // Swagger/OpenAPI documentation
   const config = new DocumentBuilder()
     .setTitle("E-commerce Basic API")
     .setDescription(

@@ -1,24 +1,3 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════
- * 📘 NestJS Controller: Orders API
- * ═══════════════════════════════════════════════════════════════════════
- *
- * จัดการ HTTP requests ที่เกี่ยวกับออเดอร์
- *
- * Endpoint ที่ต้องมี:
- *   GET    /orders         → ดูออเดอร์ทั้งหมด
- *   GET    /orders/:id     → ดูออเดอร์ตาม ID
- *   POST   /orders         → สร้างออเดอร์ใหม่
- *   PATCH  /orders/:id     → อัปเดตสถานะ/ข้อมูล
- *   DELETE /orders/:id     → ลบออเดอร์ (คืนสต็อก)
- *
- * ⚠️ ไม่มี PUT สำหรับ Orders
- *    เพราะออเดอร์ไม่ควรถูก "แทนที่ทั้งตัว"
- *    ใช้ PATCH ในการแก้ไขบางส่วนเท่านั้น
- *
- * ═══════════════════════════════════════════════════════════════════════
- */
-
 import {
   Controller,
   Get,
@@ -46,10 +25,6 @@ import { ApiResponse } from "../common/interfaces/api-response.interface";
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  // ═══════════════════════════════════════════════════════════════════
-  // ✅ ตัวอย่าง: GET /orders — ดูออเดอร์ทั้งหมด
-  // ═══════════════════════════════════════════════════════════════════
-
   @Get()
   @ApiOperation({ summary: "ดูออเดอร์ทั้งหมด" })
   @SwaggerResponse({ status: 200, description: "สำเร็จ" })
@@ -61,12 +36,6 @@ export class OrdersController {
       data: orders,
     };
   }
-
-  // ─────────────────────────────────────────────────────────────────
-  // 📌 GET /orders/:id — ดูออเดอร์ตาม ID
-  // ─────────────────────────────────────────────────────────────────
-  // 💡 ดู pattern จาก ProductsController.findOne()
-  // ⬇️ เขียน endpoint ของคุณด้านล่าง ⬇️
 
   @Get(":id")
   @ApiOperation({ summary: "ดูออเดอร์ตาม ID" })
@@ -80,15 +49,6 @@ export class OrdersController {
       data: order,
     };
   }
-
-  // ─────────────────────────────────────────────────────────────────
-  // 📌 POST /orders — สร้างออเดอร์ใหม่
-  // ─────────────────────────────────────────────────────────────────
-  // 💡 ดู pattern จาก ProductsController.create()
-  //   - ใช้ @HttpCode(HttpStatus.CREATED) สำหรับ status 201
-  //   - รับ @Body() dto: CreateOrderDto
-  //
-  // ⬇️ เขียน endpoint ของคุณด้านล่าง ⬇️
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -107,13 +67,6 @@ export class OrdersController {
     };
   }
 
-  // ─────────────────────────────────────────────────────────────────
-  // 📌 PATCH /orders/:id — อัปเดตออเดอร์
-  // ─────────────────────────────────────────────────────────────────
-  // 💡 ดู pattern จาก ProductsController.patch()
-  //
-  // ⬇️ เขียน endpoint ของคุณด้านล่าง ⬇️
-
   @Patch(":id")
   @ApiOperation({ summary: "อัปเดตสถานะออเดอร์" })
   @SwaggerResponse({ status: 200, description: "อัปเดตสำเร็จ" })
@@ -130,13 +83,6 @@ export class OrdersController {
       data: order,
     };
   }
-
-  // ─────────────────────────────────────────────────────────────────
-  // 📌 DELETE /orders/:id — ลบออเดอร์
-  // ─────────────────────────────────────────────────────────────────
-  // 💡 ดู pattern จาก ProductsController.remove()
-  //
-  // ⬇️ เขียน endpoint ของคุณด้านล่าง ⬇️
 
   @Delete(":id")
   @ApiOperation({ summary: "ลบออเดอร์ (คืนสต็อก)" })

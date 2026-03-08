@@ -1,19 +1,3 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════
- * 📘 Concept: UpdateProductDto — DTO สำหรับ PUT (แก้ไขทั้งหมด)
- * ═══════════════════════════════════════════════════════════════════════
- *
- * PUT = "เอาของใหม่มาวางแทนทั้งหมด"
- * → ทุก field ต้องส่งมาครบ (required ทั้งหมด)
- * → ต่างจาก PATCH ที่ส่งแค่ field ที่ต้องการแก้
- *
- * 📘 Concept: PUT vs PATCH
- * ── PUT ─── : ส่งข้อมูลครบทุก field → แทนที่ resource ทั้งตัว
- * ── PATCH ── : ส่งเฉพาะ field ที่เปลี่ยน → อัปเดตบางส่วน
- *
- * ═══════════════════════════════════════════════════════════════════════
- */
-
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsString,
@@ -31,12 +15,6 @@ import {
 import { ProductCategory } from "../enums/product-category.enum";
 import { ProductStatus } from "../enums/product-status.enum";
 
-/**
- * UpdateProductDto — ใช้สำหรับ PUT /products/:id
- *
- * เหมือน CreateProductDto แต่ status เป็น required
- * เพราะ PUT ต้องส่งข้อมูลครบทุก field
- */
 export class UpdateProductDto {
   @ApiProperty({ description: "ชื่อสินค้า", minLength: 3 })
   @IsString()
@@ -80,7 +58,6 @@ export class UpdateProductDto {
   @IsNumber()
   weight?: number;
 
-  // 🎯 สำหรับ PUT → status เป็น required (ไม่ใช่ Optional)
   @ApiProperty({ description: "สถานะสินค้า", enum: ProductStatus })
   @IsEnum(ProductStatus)
   status!: ProductStatus;

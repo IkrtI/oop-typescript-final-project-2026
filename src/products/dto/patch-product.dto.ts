@@ -1,22 +1,3 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════
- * 📘 Concept: PatchProductDto — DTO สำหรับ PATCH (แก้ไขบางส่วน)
- * ═══════════════════════════════════════════════════════════════════════
- *
- * PATCH = "แก้เฉพาะส่วนที่ต้องการ"
- * → ทุก field เป็น Optional (ใส่ @IsOptional())
- * → ส่งแค่ field ที่ต้องการเปลี่ยนก็พอ
- *
- * 📖 ตัวอย่างการใช้งาน:
- *   PATCH /products/123 { "price": 299 }
- *   → แก้แค่ราคา field อื่นยังเหมือนเดิม
- *
- *   PATCH /products/123 { "status": "DISCONTINUED" }
- *   → แก้แค่สถานะ field อื่นยังเหมือนเดิม
- *
- * ═══════════════════════════════════════════════════════════════════════
- */
-
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsString,
@@ -34,12 +15,6 @@ import {
 import { ProductCategory } from "../enums/product-category.enum";
 import { ProductStatus } from "../enums/product-status.enum";
 
-/**
- * PatchProductDto — ใช้สำหรับ PATCH /products/:id
- *
- * ทุก field มี @IsOptional() → ไม่จำเป็นต้องส่งมา
- * แต่ถ้าส่งมา → ต้องผ่าน validation เหมือนเดิม
- */
 export class PatchProductDto {
   @ApiPropertyOptional({ description: "ชื่อสินค้า", minLength: 3 })
   @IsOptional()

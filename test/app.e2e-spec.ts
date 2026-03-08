@@ -1,10 +1,10 @@
-import { describe, beforeEach, it, afterAll } from '@jest/globals';
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { describe, beforeEach, it, afterAll } from "@jest/globals";
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication } from "@nestjs/common";
+import request from "supertest";
+import { AppModule } from "./../src/app.module";
 
-describe('AppController (e2e)', () => {
+describe("AppController (e2e)", () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -20,9 +20,7 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(404);
+  it("/ (GET)", () => {
+    return request(app.getHttpServer()).get("/").expect(404);
   });
 });

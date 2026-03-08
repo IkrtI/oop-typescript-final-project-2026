@@ -38,10 +38,6 @@ describe("Products API (e2e)", () => {
     await app.close();
   });
 
-  /* ================================================================
-   *  HAPPY PATH
-   * ================================================================ */
-
   describe("GET /products", () => {
     it("should return an empty array when no products exist", async () => {
       const { body } = await request(app.getHttpServer())
@@ -119,7 +115,7 @@ describe("Products API (e2e)", () => {
         description: "Updated description",
         price: 999.99,
         stockQuantity: 10,
-        sku: originalSku, // keep same SKU
+        sku: originalSku,
         category: "CLOTHING",
         brand: "UpdatedBrand",
         images: ["https://example.com/updated.jpg"],
@@ -158,7 +154,7 @@ describe("Products API (e2e)", () => {
 
       const data = expectApiSuccess(body);
       expect(data.price).toBe(250);
-      expect(data.stockQuantity).toBe(20); // unchanged
+      expect(data.stockQuantity).toBe(20);
     });
 
     it("should update only the stockQuantity", async () => {
@@ -169,7 +165,7 @@ describe("Products API (e2e)", () => {
 
       const data = expectApiSuccess(body);
       expect(data.stockQuantity).toBe(99);
-      expect(data.price).toBe(250); // from previous patch
+      expect(data.price).toBe(250);
     });
 
     it("should update the status", async () => {
@@ -210,10 +206,6 @@ describe("Products API (e2e)", () => {
       expectErrorResponse(body, 404);
     });
   });
-
-  /* ================================================================
-   *  ERROR / VALIDATION PATHS
-   * ================================================================ */
 
   describe("POST /products — duplicate SKU", () => {
     const sku = uniqueSku("DUP");
@@ -553,7 +545,8 @@ describe("Products API (e2e)", () => {
 
   describe("POST /products — forbid non-whitelisted fields", () => {
     it("should strip or reject unknown fields", async () => {
-      const payload: CreateProductPayload & { unknownField?: string } = validProductPayload();
+      const payload: CreateProductPayload & { unknownField?: string } =
+        validProductPayload();
       payload.unknownField = "should be rejected";
 
       const { body } = await request(app.getHttpServer())
