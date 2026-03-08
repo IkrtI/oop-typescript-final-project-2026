@@ -1,6 +1,261 @@
-# NestJS Backend API — Project Template
+# E-commerce Basic API
 
-## 📌 Project Overview
+REST API สำหรับโปรเจกต์วิชา OOP TypeScript 2026 พัฒนาด้วย NestJS โดยใช้ JSON file เป็นแหล่งเก็บข้อมูลหลัก และมีหน้า frontend แบบ static สำหรับทดลองใช้งานระบบผ่าน browser
+
+โปรเจกต์นี้อยู่ใน Model Set 5: `E-commerce Basic`
+
+## Overview
+
+ระบบนี้จัดการ 3 โดเมนหลัก:
+
+- `Products` สำหรับสินค้าและสต็อก
+- `Orders` สำหรับคำสั่งซื้อและ state transition
+- `Customers` สำหรับข้อมูลลูกค้าและประวัติการซื้อ
+
+Business logic ที่สำคัญของระบบ:
+
+- สร้าง order โดย snapshot ราคาสินค้า ณ เวลาซื้อ
+- ตัดสต็อกอัตโนมัติเมื่อสร้าง order
+- คืนสต็อกอัตโนมัติเมื่อ cancel หรือลบ order
+- ตรวจ state transition ของ order ตามกฎที่กำหนด
+- มี insight endpoints สำหรับ top buyers, most bought products และ product buyers
+
+## Tech Stack
+
+- NestJS
+- TypeScript
+- Swagger / OpenAPI
+- class-validator + class-transformer
+- JSON file persistence
+- Jest + Supertest สำหรับ test
+
+## Team
+
+รายชื่อสมาชิกจาก `package.json`:
+
+| Name | GitHub | Student ID |
+|---|---|---|
+| กริช เถกิงผล | `IkrtI` | 68010025 |
+| นภัทร์ มะโนธรรม | `bouquetofroses` | 68010562 |
+| ณัฐนันท์ พันเพชร์ | `Lukazx15` | 68010346 |
+| ณัชชา วัฒนนันทอนันต์ | `pockypycok` | 68010312 |
+
+## Project Structure
+
+```text
+.
+├── data/                    # JSON data source สำหรับ runtime ปกติ
+├── docs/                    # เอกสาร API, data model, UML
+├── frontend/                # static dashboard
+├── scripts/                 # utility scripts เช่น generate mock data
+├── src/
+│   ├── common/              # base entity, shared interfaces, generic repository
+│   ├── customers/           # customer domain
+│   ├── orders/              # order domain
+│   ├── products/            # product domain
+│   ├── app.module.ts
+│   └── main.ts
+├── subjects/                # requirement ของรายวิชา
+├── test/                    # e2e tests + isolated test data
+├── package.json
+└── README.md
+```
+
+## Data Model
+
+Core domain ของโจทย์คือ `Product` และ `Order` และใน implementation นี้มี `Customer` เพิ่มเข้ามาเพื่อรองรับการซื้อสินค้าและ analytics ข้ามโดเมน
+
+### Product
+
+- ข้อมูลหลัก: `name`, `description`, `price`, `stockQuantity`, `sku`, `brand`, `images`
+- enum ที่ใช้: `ProductCategory`, `ProductStatus`
+- กฎสำคัญ: SKU ต้องไม่ซ้ำ, ราคา > 0, stock ต้องไม่ติดลบ
+
+### Order
+
+- เก็บ `customerId`, `items`, `totalAmount`, `status`, `paymentMethod`, `shippingAddress`
+- `items` เป็น snapshot ของชื่อสินค้าและราคา ณ เวลาซื้อ
+- enum ที่ใช้: `OrderStatus`, `PaymentMethod`
+
+### Customer
+
+- ข้อมูลหลัก: `fullName`, `email`, `phone`, `address`, `status`
+- ใช้เพื่อเชื่อม order history และ buyer insights
+
+## Main Features
+
+- CRUD ครบสำหรับ products
+- CRUD ครบสำหรับ customers
+- ดู orders ทั้งหมด, ดูรายตัว, สร้าง, patch, ลบ
+- ป้องกันการลบ customer ที่มีประวัติการสั่งซื้อแล้ว
+- แสดงสินค้ายอดนิยมจากประวัติการซื้อ
+- แสดงลูกค้าที่เคยซื้อสินค้าตัวใดตัวหนึ่ง
+- แสดง top buyers จากยอดใช้จ่ายรวม
+
+## API Summary
+
+### Products
+
+- `GET /products`
+- `GET /products/:id`
+- `POST /products`
+- `PUT /products/:id`
+- `PATCH /products/:id`
+- `DELETE /products/:id`
+- `GET /products/:id/customers`
+- `GET /products/insights/most-bought`
+
+### Orders
+
+- `GET /orders`
+- `GET /orders/:id`
+- `POST /orders`
+- `PATCH /orders/:id`
+- `DELETE /orders/:id`
+
+### Customers
+
+- `GET /customers`
+- `GET /customers/:id`
+- `POST /customers`
+- `PUT /customers/:id`
+- `PATCH /customers/:id`
+- `DELETE /customers/:id`
+- `GET /customers/:id/orders`
+- `GET /customers/insights/top-buyers`
+
+### Standard Response Format
+
+ทุก endpoint ส่ง response ในรูปแบบเดียวกัน:
+
+```ts
+interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T | null;
+}
+```
+
+## Order Lifecycle
+
+สถานะของ order ถูกควบคุมด้วย state machine:
+
+```text
+PENDING -> PAID -> SHIPPED -> COMPLETED
+   |         |
+   v         v
+CANCELLED  CANCELLED
+```
+
+Transition ที่อนุญาต:
+
+- `PENDING -> PAID`
+- `PENDING -> CANCELLED`
+- `PAID -> SHIPPED`
+- `PAID -> CANCELLED`
+- `SHIPPED -> COMPLETED`
+
+## Validation and Business Rules
+
+- ใช้ global `ValidationPipe` พร้อม `whitelist`, `forbidNonWhitelisted`, `transform`
+- order ใหม่ต้องอ้างถึง customer ที่มีอยู่จริง
+- สินค้าที่จะสั่งซื้อได้ต้องมีสถานะ `ACTIVE`
+- ถ้าสต็อกไม่พอ จะ reject request ด้วย `400 Bad Request`
+- ถ้าเกิด error ระหว่างสร้าง order หลังจากตัด stock ไปบางส่วน ระบบจะ rollback โดยคืน stock ที่ถูกตัดไปแล้ว
+- ถ้า customer มี order history อยู่ จะลบไม่ได้
+
+## Getting Started
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Run development server
+
+```bash
+npm run start:dev
+```
+
+แอปจะรันที่ `http://localhost:3000`
+
+### 3. Open Swagger UI
+
+```text
+http://localhost:3000/api
+```
+
+### 4. Open frontend dashboard
+
+เมื่อ backend รันอยู่ หน้า frontend จะถูก serve ที่:
+
+```text
+http://localhost:3000/app
+```
+
+หมายเหตุ: ในโค้ด `main.ts` มีการ map โฟลเดอร์ `frontend/` มาไว้ใต้ route `/app`
+
+## Available Scripts
+
+| Command | Description |
+|---|---|
+| `npm run start` | Run application |
+| `npm run start:dev` | Run in watch mode |
+| `npm run start:debug` | Run in debug + watch mode |
+| `npm run build` | Build NestJS app |
+| `npm run start:prod` | Run built app from `dist/` |
+| `npm run lint` | Run ESLint with autofix |
+| `npm run format` | Run ESLint + Prettier on source files |
+| `npm run test` | Run unit tests |
+| `npm run test:e2e` | Run e2e tests |
+| `npm run test:cov` | Run coverage |
+| `npm run mock:generate` | Generate mock data |
+| `npm run preview` | Run Wrangler preview |
+| `npm run deploy` | Deploy with Wrangler |
+
+## Testing
+
+มี test แยกไว้ในโฟลเดอร์ `test/` พร้อมชุดข้อมูลเฉพาะสำหรับ e2e ทำให้สามารถทดสอบ flow หลักของระบบได้โดยไม่กระทบไฟล์ข้อมูล runtime ปกติ
+
+ตัวอย่าง:
+
+```bash
+npm run test:e2e
+```
+
+## Documentation
+
+เอกสารหลักของโปรเจกต์อยู่ในโฟลเดอร์ `docs/`
+
+- `docs/api-specification.md` สรุป endpoint และ behavior หลัก
+- `docs/data-model.md` อธิบาย data model และ business rules
+- `docs/uml-diagrams.md` รวม UML ของระบบทั้ง architecture, class, sequence, state, activity และ persistence
+
+เอกสารโจทย์จากรายวิชาอยู่ในโฟลเดอร์ `subjects/`
+
+- `subjects/requirement.md`
+- `subjects/models.md`
+- `subjects/submission.md`
+- `subjects/evaluation.md`
+
+## Persistence Design
+
+ระบบใช้ generic repository ชื่อ `JsonFileRepository<T>` เพื่อแยก business logic ออกจากการอ่านเขียนไฟล์ JSON โดยมีแนวคิดหลักดังนี้:
+
+- lazy loading โหลดข้อมูลจากไฟล์เมื่อถูกเรียกใช้ครั้งแรก
+- atomic write ผ่านไฟล์ `.tmp` แล้วค่อย rename
+- write queue เพื่อหลีกเลี่ยงปัญหา concurrent write
+
+## Notes
+
+- โปรเจกต์นี้เน้น type safety และหลีกเลี่ยงการใช้ `any`
+- route จริงของลูกค้าใช้ prefix `customers` ไม่ใช่ `customer`
+- README นี้อธิบาย implementation ปัจจุบันของ repository นี้ ไม่ใช่ template กลางของรายวิชา
+
+## License
+
+ใช้สำหรับการศึกษาในรายวิชา OOP TypeScript 2026
 
 โปรเจคนี้เป็น **Template สำหรับ Class Project** ในรายวิชาการพัฒนา Backend ด้วย NestJS Framework
 
@@ -230,6 +485,7 @@ interface ApiResponse<T> {
 * 🔌 **API Specification (Swagger)** — เอกสาร API ทุก Endpoint
 * 🧱 **Data Model Documentation** — เอกสารอธิบาย Data Model
 * 📊 **UML Diagram** — แผนภาพ UML ของ Data Model
+* 🧭 **UML Documentation** — ดู Mermaid diagrams ฉบับเต็มได้ที่ `docs/uml-diagrams.md`
 
 ---
 

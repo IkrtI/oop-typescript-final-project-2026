@@ -117,3 +117,9 @@ CANCELLED  CANCELLED
 5. **Price Validation:** ราคาสินค้าต้องมากกว่า 0
 6. **Stock Validation:** จำนวนสต็อกต้อง >= 0
 7. **Total Calculation:** ยอดรวมคำนวณจาก Backend เท่านั้น
+
+---
+
+## UML Reference
+
+ดู UML ของระบบฉบับเต็มได้ที่ `docs/uml-diagrams.md`
