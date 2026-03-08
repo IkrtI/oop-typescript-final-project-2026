@@ -57,7 +57,7 @@ export class OrdersService {
     private readonly ordersRepository: OrdersRepository,
     private readonly productsService: ProductsService,
     private readonly customersService: CustomersService,
-  ) { }
+  ) {}
 
   // ═══════════════════════════════════════════════════════════════════
   // 📗 READ OPERATIONS

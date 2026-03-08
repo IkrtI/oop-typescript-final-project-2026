@@ -18,7 +18,7 @@ export class CustomersService {
   constructor(
     private readonly customersRepository: CustomersRepository,
     private readonly ordersRepository: OrdersRepository,
-  ) { }
+  ) {}
 
   async findAll(): Promise<Customer[]> {
     return this.customersRepository.findAll();
@@ -256,4 +256,3 @@ export class CustomersService {
     }
   }
 }
-

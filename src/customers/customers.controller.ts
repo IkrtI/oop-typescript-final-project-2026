@@ -26,7 +26,7 @@ import { PatchCustomerDto } from "./dto/patch-customer.dto";
 @ApiTags("Customers")
 @Controller("customers")
 export class CustomersController {
-  constructor(private readonly customersService: CustomersService) { }
+  constructor(private readonly customersService: CustomersService) {}
 
   @Get("insights/top-buyers")
   @ApiOperation({ summary: "Top customers by spending" })
@@ -41,8 +41,6 @@ export class CustomersController {
       data,
     };
   }
-
-
 
   @Get()
   @ApiOperation({ summary: "Get all customers" })

@@ -34,8 +34,6 @@ export class ProductsRepository extends JsonFileRepository<Product> {
    */
   async findBySku(sku: string, excludeId?: string): Promise<Product | null> {
     const all = await this.findAll();
-    return (
-      all.find((p) => p.sku === sku && p.id !== excludeId) ?? null
-    );
+    return all.find((p) => p.sku === sku && p.id !== excludeId) ?? null;
   }
 }

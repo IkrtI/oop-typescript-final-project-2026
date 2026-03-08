@@ -55,7 +55,7 @@ async function bootstrap(): Promise<void> {
         "## Core Models\n" +
         "- **Product** — สินค้าในระบบ\n" +
         "- **Order** — คำสั่งซื้อ\n\n" +
-        "- **Customer** — ลูกค้าในระบบ\n\n"
+        "- **Customer** — ลูกค้าในระบบ\n\n",
     )
     .setVersion("1.0")
     .addTag("Products", "จัดการสินค้า")
