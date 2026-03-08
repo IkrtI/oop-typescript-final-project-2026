@@ -57,7 +57,7 @@ export class OrdersService {
     private readonly ordersRepository: OrdersRepository,
     private readonly productsService: ProductsService,
     private readonly customersService: CustomersService,
-  ) {}
+  ) { }
 
   // ═══════════════════════════════════════════════════════════════════
   // 📗 READ OPERATIONS
@@ -164,51 +164,65 @@ export class OrdersService {
     }
 
     // ═══════════════════════════════════════════════════════
-    // ขั้นที่ 1: ตรวจสอบสินค้าแต่ละรายการ + สร้าง OrderItem[]
+    // ขั้นที่ 1+2: ตรวจสอบสินค้า + ตัดสต็อกในรอบเดียว (ป้องกัน race condition)
     // ═══════════════════════════════════════════════════════
     const orderItems: OrderItem[] = [];
     let totalAmount = 0;
+    const deductedItems: Array<{ productId: string; quantity: number }> = [];
 
-    for (const item of dto.items) {
-      // 1a. หาสินค้า — ต้อง try-catch เพราะ findOne throw 404 แต่เราต้องการ 400
-      let product;
-      try {
-        product = await this.productsService.findOne(item.productId);
-      } catch {
-        throw new BadRequestException(`Product '${item.productId}' not found`);
+    try {
+      for (const item of dto.items) {
+        // 1a. หาสินค้า — ต้อง try-catch เพราะ findOne throw 404 แต่เราต้องการ 400
+        let product;
+        try {
+          product = await this.productsService.findOne(item.productId);
+        } catch {
+          throw new BadRequestException(
+            `Product '${item.productId}' not found`,
+          );
+        }
+
+        // 1b. ตรวจว่าสินค้าพร้อมขาย (ACTIVE)
+        if (product.status !== ProductStatus.ACTIVE) {
+          throw new BadRequestException(
+            `Product '${product.name}' is not available (${product.status})`,
+          );
+        }
+
+        // 1c. ตรวจสต็อกเพียงพอ
+        if (product.stockQuantity < item.quantity) {
+          throw new BadRequestException(
+            `Insufficient stock for '${product.name}'`,
+          );
+        }
+
+        // 1d. ตัดสต็อกทันที (ป้องกัน race condition)
+        await this.productsService.deductStock(item.productId, item.quantity);
+        deductedItems.push({
+          productId: item.productId,
+          quantity: item.quantity,
+        });
+
+        // 1e. สร้าง OrderItem พร้อม Price Snapshot (เก็บราคา ณ ตอนสั่ง)
+        const subtotal = product.price * item.quantity;
+        orderItems.push({
+          productId: product.id,
+          productName: product.name,
+          priceAtPurchase: product.price,
+          quantity: item.quantity,
+          subtotal,
+        });
+        totalAmount += subtotal;
       }
-
-      // 1b. ตรวจว่าสินค้าพร้อมขาย (ACTIVE)
-      if (product.status !== ProductStatus.ACTIVE) {
-        throw new BadRequestException(
-          `Product '${product.name}' is not available (${product.status})`,
+    } catch (error) {
+      // Rollback: คืนสต็อกสินค้าที่ตัดไปแล้ว ถ้ามี item ที่ล้มเหลวกลางทาง
+      for (const deducted of deductedItems) {
+        await this.productsService.restoreStock(
+          deducted.productId,
+          deducted.quantity,
         );
       }
-
-      // 1c. ตรวจสต็อกเพียงพอ
-      if (product.stockQuantity < item.quantity) {
-        throw new BadRequestException(
-          `Insufficient stock for '${product.name}'`,
-        );
-      }
-
-      // 1d. สร้าง OrderItem พร้อม Price Snapshot (เก็บราคา ณ ตอนสั่ง)
-      const subtotal = product.price * item.quantity;
-      orderItems.push({
-        productId: product.id,
-        productName: product.name,
-        priceAtPurchase: product.price,
-        quantity: item.quantity,
-        subtotal,
-      });
-      totalAmount += subtotal;
-    }
-
-    // ═══════════════════════════════════════════════════════
-    // ขั้นที่ 2: ตัดสต็อกสินค้าทุกรายการ
-    // ═══════════════════════════════════════════════════════
-    for (const item of dto.items) {
-      await this.productsService.deductStock(item.productId, item.quantity);
+      throw error;
     }
 
     // ═══════════════════════════════════════════════════════

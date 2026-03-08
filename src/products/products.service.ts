@@ -48,7 +48,7 @@ export class ProductsService {
     private readonly productsRepository: ProductsRepository,
     private readonly ordersRepository: OrdersRepository,
     private readonly customersRepository: CustomersRepository,
-  ) {}
+  ) { }
 
   // ═══════════════════════════════════════════════════════════════════
   // 📗 READ OPERATIONS — เมธอดสำหรับอ่านข้อมูล
@@ -117,8 +117,8 @@ export class ProductsService {
   // ⬇️ เขียนโค้ดของคุณด้านล่าง ⬇️
   async create(dto: CreateProductDto): Promise<Product> {
     // ── ขั้นที่ 1: ตรวจสอบว่า SKU ซ้ำกับสินค้าที่มีอยู่แล้วหรือไม่ ──
-    const allProducts = await this.findAll();
-    if (allProducts.some((p) => p.sku === dto.sku)) {
+    const existingSku = await this.productsRepository.findBySku(dto.sku);
+    if (existingSku) {
       throw new BadRequestException("SKU already exists");
     }
 
@@ -190,8 +190,8 @@ export class ProductsService {
 
     // ── ขั้นที่ 2: ตรวจ SKU ซ้ำ เฉพาะกรณี SKU เปลี่ยน ──
     if (dto.sku !== existing.sku) {
-      const all = await this.findAll();
-      if (all.some((p) => p.sku === dto.sku)) {
+      const existingSku = await this.productsRepository.findBySku(dto.sku);
+      if (existingSku) {
         throw new BadRequestException("SKU already exists");
       }
     }
@@ -258,8 +258,8 @@ export class ProductsService {
 
     // ── ขั้นที่ 2: ตรวจ SKU ซ้ำ (เฉพาะเมื่อ dto.sku ถูกส่งมาและไม่เท่าเดิม) ──
     if (dto.sku !== undefined && dto.sku !== existing.sku) {
-      const all = await this.findAll();
-      if (all.some((p) => p.sku === dto.sku)) {
+      const existingSku = await this.productsRepository.findBySku(dto.sku);
+      if (existingSku) {
         throw new BadRequestException("SKU already exists");
       }
     }
@@ -335,6 +335,13 @@ export class ProductsService {
   async deductStock(productId: string, quantity: number): Promise<Product> {
     // หาสินค้าจาก id
     const product = await this.findOne(productId);
+
+    // ตรวจสอบว่าสต็อกเพียงพอก่อนตัด (ป้องกัน stock ติดลบ)
+    if (product.stockQuantity < quantity) {
+      throw new BadRequestException(
+        `Insufficient stock for '${product.name}' (available: ${product.stockQuantity}, requested: ${quantity})`,
+      );
+    }
 
     // ลดจำนวนสต็อก
     product.stockQuantity -= quantity;
